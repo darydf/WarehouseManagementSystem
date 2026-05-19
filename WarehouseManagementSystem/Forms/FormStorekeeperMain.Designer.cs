@@ -39,6 +39,7 @@
             this.btnExit = new System.Windows.Forms.Button();
             this.panelContent = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
+            this.проверкаКонтрагентаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.panelContent.SuspendLayout();
             this.SuspendLayout();
@@ -50,10 +51,11 @@
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.складToolStripMenuItem,
             this.документыToolStripMenuItem,
-            this.сменитьПользователяToolStripMenuItem});
+            this.сменитьПользователяToolStripMenuItem,
+            this.проверкаКонтрагентаToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1082, 33);
+            this.menuStrip.Size = new System.Drawing.Size(1098, 33);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -69,7 +71,7 @@
             // остаткиToolStripMenuItem
             // 
             this.остаткиToolStripMenuItem.Name = "остаткиToolStripMenuItem";
-            this.остаткиToolStripMenuItem.Size = new System.Drawing.Size(224, 30);
+            this.остаткиToolStripMenuItem.Size = new System.Drawing.Size(162, 30);
             this.остаткиToolStripMenuItem.Text = "Остатки";
             // 
             // документыToolStripMenuItem
@@ -116,9 +118,9 @@
             this.btnExit.BackColor = System.Drawing.Color.MediumAquamarine;
             this.btnExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnExit.Location = new System.Drawing.Point(995, 2);
+            this.btnExit.Location = new System.Drawing.Point(985, 0);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(75, 28);
+            this.btnExit.Size = new System.Drawing.Size(101, 33);
             this.btnExit.TabIndex = 1;
             this.btnExit.Text = "ВЫХОД";
             this.btnExit.UseVisualStyleBackColor = false;
@@ -130,7 +132,7 @@
             this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelContent.Location = new System.Drawing.Point(0, 33);
             this.panelContent.Name = "panelContent";
-            this.panelContent.Size = new System.Drawing.Size(1082, 615);
+            this.panelContent.Size = new System.Drawing.Size(1098, 615);
             this.panelContent.TabIndex = 2;
             // 
             // label1
@@ -142,11 +144,19 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "\r\n";
             // 
+            // проверкаКонтрагентаToolStripMenuItem
+            // 
+            this.проверкаКонтрагентаToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.проверкаКонтрагентаToolStripMenuItem.Name = "проверкаКонтрагентаToolStripMenuItem";
+            this.проверкаКонтрагентаToolStripMenuItem.Size = new System.Drawing.Size(213, 29);
+            this.проверкаКонтрагентаToolStripMenuItem.Text = "Проверка контрагента";
+            this.проверкаКонтрагентаToolStripMenuItem.Click += new System.EventHandler(this.проверкаКонтрагентаToolStripMenuItem_Click);
+            // 
             // FormStorekeeperMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1082, 648);
+            this.ClientSize = new System.Drawing.Size(1098, 648);
             this.Controls.Add(this.panelContent);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.menuStrip);
@@ -175,5 +185,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripMenuItem новаяПоставкаToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem сменитьПользователяToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem проверкаКонтрагентаToolStripMenuItem;
     }
 }

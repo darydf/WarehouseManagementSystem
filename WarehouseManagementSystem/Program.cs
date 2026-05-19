@@ -2,8 +2,11 @@
 using OfficeOpenXml;
 using Org.BouncyCastle.Utilities;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using WarehouseManagementSystem.Forms;
+using WarehouseManagementSystem.Helpers;
+using WarehouseManagementSystem.Services;
 
 namespace WarehouseManagementSystem
 {
@@ -62,11 +65,53 @@ namespace WarehouseManagementSystem
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         [STAThread]
+        /* static void Main()
+         {
+             try
+             {
+                 ExcelPackage.License.SetNonCommercialPersonal("Даша");
+
+                 Application.EnableVisualStyles();
+                 Application.SetCompatibleTextRenderingDefault(false);
+                 Application.Run(new FormLogin());
+             }
+             catch (Exception ex)
+             {
+                 _logger.Error(ex, "Критическая ошибка при запуске приложения");
+                 MessageBox.Show(string.Format(String.CriticalError, ex.Message), String.ErrorTitle,
+     MessageBoxButtons.OK, MessageBoxIcon.Error);
+             }
+         } */
         static void Main()
         {
             try
             {
                 ExcelPackage.License.SetNonCommercialPersonal("Даша");
+
+                // ========== НАЧАЛО БЛОКА ДЛЯ ВАЛЮТЫ ==========
+                try
+                {
+                    CurrencyHelper.LoadSettings();
+
+                    Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var currencyService = new CurrencyService();
+                            await currencyService.UpdateExchangeRates();
+                        }
+                        catch (Exception ex)
+                        {
+                            // Логируем ошибку обновления курсов, но программа продолжит работу
+                            _logger.Error(ex, "Не удалось обновить курсы валют при запуске");
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, "Ошибка инициализации модуля валют");
+                }
+                // Конец блока для валюты
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
@@ -76,7 +121,7 @@ namespace WarehouseManagementSystem
             {
                 _logger.Error(ex, "Критическая ошибка при запуске приложения");
                 MessageBox.Show(string.Format(String.CriticalError, ex.Message), String.ErrorTitle,
-    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

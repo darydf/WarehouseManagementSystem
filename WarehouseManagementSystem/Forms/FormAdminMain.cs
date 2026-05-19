@@ -100,6 +100,10 @@ namespace WarehouseManagementSystem.Forms
             settingsForm.ShowDialog();
         }
 
-       
+        private void проверкаКонтрагентаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormContractorCheck form = new FormContractorCheck();
+            form.ShowDialog();
+        }
     }
 }

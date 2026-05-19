@@ -16,18 +16,17 @@ namespace WarehouseManagementSystem.Forms
     {
         private DataTable _cartTable;
         private string _shipmentNumber;
-
         public FormNewShipment()
-        {
-            InitializeComponent();
-            InitializeEvents();
-            InitializeCart();
-            LoadStock();
-            GenerateShipmentNumber();
-            lblDate.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-            SetupButtons();
-            Text = "Оформление новой отгрузки";
-        }
+        { 
+              InitializeComponent();
+              InitializeEvents();
+              InitializeCart();
+              LoadStock();
+              GenerateShipmentNumber();
+              lblDate.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+              SetupButtons();
+              Text = "Оформление новой отгрузки";
+        } 
 
         private void InitializeEvents()
         {
@@ -586,4 +585,4 @@ namespace WarehouseManagementSystem.Forms
 
 
     }
-}
+} 

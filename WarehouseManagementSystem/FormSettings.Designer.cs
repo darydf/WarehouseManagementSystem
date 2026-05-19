@@ -37,6 +37,9 @@
             this.lblDaysTitle = new System.Windows.Forms.Label();
             this.lblDays = new System.Windows.Forms.Label();
             this.lblPercent = new System.Windows.Forms.Label();
+            this.labelCurrency = new System.Windows.Forms.Label();
+            this.comboBoxCurrency = new System.Windows.Forms.ComboBox();
+            this.labelHint = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numDiscountPercent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDiscountDays)).BeginInit();
             this.SuspendLayout();
@@ -62,9 +65,9 @@
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.btnSave.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnSave.Location = new System.Drawing.Point(29, 217);
+            this.btnSave.Location = new System.Drawing.Point(42, 431);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(104, 35);
+            this.btnSave.Size = new System.Drawing.Size(121, 35);
             this.btnSave.TabIndex = 2;
             this.btnSave.Text = "Сохранить";
             this.btnSave.UseVisualStyleBackColor = false;
@@ -73,7 +76,7 @@
             // btnCancel
             // 
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Location = new System.Drawing.Point(225, 218);
+            this.btnCancel.Location = new System.Drawing.Point(225, 432);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(104, 34);
             this.btnCancel.TabIndex = 3;
@@ -128,11 +131,45 @@
             this.lblPercent.TabIndex = 8;
             this.lblPercent.Text = "Скидка (%)";
             // 
+            // labelCurrency
+            // 
+            this.labelCurrency.AutoSize = true;
+            this.labelCurrency.Location = new System.Drawing.Point(30, 190);
+            this.labelCurrency.Name = "labelCurrency";
+            this.labelCurrency.Size = new System.Drawing.Size(150, 16);
+            this.labelCurrency.TabIndex = 9;
+            this.labelCurrency.Text = "Валюта отображения:";
+            // 
+            // comboBoxCurrency
+            // 
+            this.comboBoxCurrency.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxCurrency.FormattingEnabled = true;
+            this.comboBoxCurrency.Items.AddRange(new object[] {
+            "RUB",
+            "USD",
+            "EUR"});
+            this.comboBoxCurrency.Location = new System.Drawing.Point(33, 229);
+            this.comboBoxCurrency.Name = "comboBoxCurrency";
+            this.comboBoxCurrency.Size = new System.Drawing.Size(121, 24);
+            this.comboBoxCurrency.TabIndex = 10;
+            // 
+            // labelHint
+            // 
+            this.labelHint.AutoSize = true;
+            this.labelHint.Location = new System.Drawing.Point(26, 278);
+            this.labelHint.Name = "labelHint";
+            this.labelHint.Size = new System.Drawing.Size(503, 16);
+            this.labelHint.TabIndex = 11;
+            this.labelHint.Text = "Выберите валюту для отображения цен.Курсы обновляются автоматически";
+            // 
             // FormSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 510);
+            this.Controls.Add(this.labelHint);
+            this.Controls.Add(this.comboBoxCurrency);
+            this.Controls.Add(this.labelCurrency);
             this.Controls.Add(this.lblPercent);
             this.Controls.Add(this.lblDays);
             this.Controls.Add(this.lblDaysTitle);
@@ -163,5 +200,8 @@
         private System.Windows.Forms.Label lblDaysTitle;
         private System.Windows.Forms.Label lblDays;
         private System.Windows.Forms.Label lblPercent;
+        private System.Windows.Forms.Label labelCurrency;
+        private System.Windows.Forms.ComboBox comboBoxCurrency;
+        private System.Windows.Forms.Label labelHint;
     }
 }
