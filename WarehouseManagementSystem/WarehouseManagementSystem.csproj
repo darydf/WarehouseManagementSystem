@@ -145,12 +145,6 @@
     <Compile Include="Forms\FormChooseProduct.Designer.cs">
       <DependentUpon>FormChooseProduct.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormContractorCheck.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormContractorCheck.Designer.cs">
-      <DependentUpon>FormContractorCheck.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\FormShipmentReport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -273,6 +267,7 @@
     <Compile Include="Services\PasswordHasher.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ShipmentService.cs" />
+    <Compile Include="Services\WeatherService.cs" />
     <Compile Include="String.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -161,11 +161,11 @@
             // 
             // проверкаКонтрагентаToolStripMenuItem
             // 
-            this.проверкаКонтрагентаToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+          /*  this.проверкаКонтрагентаToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.проверкаКонтрагентаToolStripMenuItem.Name = "проверкаКонтрагентаToolStripMenuItem";
             this.проверкаКонтрагентаToolStripMenuItem.Size = new System.Drawing.Size(214, 29);
             this.проверкаКонтрагентаToolStripMenuItem.Text = "Проверка Контрагента";
-            this.проверкаКонтрагентаToolStripMenuItem.Click += new System.EventHandler(this.проверкаКонтрагентаToolStripMenuItem_Click);
+            this.проверкаКонтрагентаToolStripMenuItem.Click += new System.EventHandler(this.проверкаКонтрагентаToolStripMenuItem_Click); */
             // 
             // FormAdminMain
             // 

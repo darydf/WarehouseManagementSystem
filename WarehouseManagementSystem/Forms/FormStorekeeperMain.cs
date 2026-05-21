@@ -95,10 +95,10 @@ namespace WarehouseManagementSystem.Forms
             this.Close();
         }
 
-        private void проверкаКонтрагентаToolStripMenuItem_Click(object sender, EventArgs e)
+      /*  private void проверкаКонтрагентаToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormContractorCheck form = new FormContractorCheck();
             form.ShowDialog();
-        }
+        } */
     }
 }
