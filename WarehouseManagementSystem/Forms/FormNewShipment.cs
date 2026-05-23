@@ -65,13 +65,11 @@ namespace WarehouseManagementSystem.Forms
             AddContractorBlock();
             AddWeatherBlock();
 
-            // 3. Сдвигаем все существующие элементы вниз, чтобы освободить место
-            ShiftAllElementsDown(280); // 220 — высота блоков
+            ShiftAllElementsDown(320); 
 
-            // 4. Вызываем инициализацию событий для кнопок
             InitializeEvents();
 
-            // 5. Загружаем данные
+            
             InitializeCart();
             LoadStock();
             GenerateShipmentNumber();
@@ -819,37 +817,75 @@ namespace WarehouseManagementSystem.Forms
              lblWeatherResult = new Label() { Location = new Point(5, 5), Size = new Size(290, 15) };
              panelWeather.Controls.Add(lblWeatherResult);
          } */
+        /* private void AddWeatherBlock()
+         {
+             GroupBox gb = new GroupBox();
+             gb.Text = "ПРОГНОЗ ПОГОДЫ";
+             gb.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+             gb.Location = new Point(420, 50);
+             gb.Size = new Size(380, 180);
+             this.Controls.Add(gb);
+
+             Label lblRegion = new Label() { Text = "Регион:", Location = new Point(15, 35), Size = new Size(55, 25) };
+             gb.Controls.Add(lblRegion);
+
+             cmbRegion = new ComboBox() { Location = new Point(75, 33), Size = new Size(130, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+             cmbRegion.Items.AddRange(new[] { "Москва", "Санкт-Петербург", "Новосибирск", "Екатеринбург", "Казань", "Норильск" });
+             cmbRegion.SelectedIndex = 0;
+             gb.Controls.Add(cmbRegion);
+
+             Label lblDateTitle = new Label() { Text = "Дата:", Location = new Point(220, 35), Size = new Size(45, 25) };
+             gb.Controls.Add(lblDateTitle);
+
+             dtpDeliveryDate = new DateTimePicker() { Location = new Point(265, 33), Size = new Size(100, 23), MinDate = DateTime.Now.AddDays(1), Value = DateTime.Now.AddDays(2) };
+             gb.Controls.Add(dtpDeliveryDate);
+
+             btnGetWeather = new Button() { Text = "Получить прогноз", Location = new Point(15, 70), Size = new Size(130, 28) };
+             btnGetWeather.Click += btnGetWeather_Click;
+             gb.Controls.Add(btnGetWeather);
+
+             panelWeather = new Panel() { Location = new Point(15, 110), Size = new Size(340, 55), BorderStyle = BorderStyle.FixedSingle };
+             gb.Controls.Add(panelWeather);
+
+             lblWeatherResult = new Label() { Location = new Point(5, 5), Size = new Size(330, 45), Font = new Font("Segoe UI", 9) };
+             panelWeather.Controls.Add(lblWeatherResult);
+         } */
         private void AddWeatherBlock()
         {
             GroupBox gb = new GroupBox();
             gb.Text = "ПРОГНОЗ ПОГОДЫ";
             gb.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             gb.Location = new Point(420, 50);
-            gb.Size = new Size(380, 180);  // выше и шире
+            gb.Size = new Size(420, 220);  // шире и выше
             this.Controls.Add(gb);
 
-            Label lblRegion = new Label() { Text = "Регион:", Location = new Point(15, 35), Size = new Size(55, 25) };
+            // Регион
+            Label lblRegion = new Label() { Text = "Регион:", Location = new Point(15, 35), Size = new Size(60, 25), Font = new Font("Segoe UI", 11, FontStyle.Bold) };
             gb.Controls.Add(lblRegion);
 
-            cmbRegion = new ComboBox() { Location = new Point(75, 33), Size = new Size(130, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            cmbRegion = new ComboBox() { Location = new Point(80, 33), Size = new Size(150, 23), DropDownStyle = ComboBoxStyle.DropDownList };
             cmbRegion.Items.AddRange(new[] { "Москва", "Санкт-Петербург", "Новосибирск", "Екатеринбург", "Казань", "Норильск" });
             cmbRegion.SelectedIndex = 0;
             gb.Controls.Add(cmbRegion);
 
-            Label lblDateTitle = new Label() { Text = "Дата:", Location = new Point(220, 35), Size = new Size(45, 25) };
+            // Дата
+            Label lblDateTitle = new Label() { Text = "Дата:", Location = new Point(250, 35), Size = new Size(50, 25), Font = new Font("Segoe UI", 11, FontStyle.Bold) };
             gb.Controls.Add(lblDateTitle);
 
-            dtpDeliveryDate = new DateTimePicker() { Location = new Point(265, 33), Size = new Size(100, 23), MinDate = DateTime.Now.AddDays(1), Value = DateTime.Now.AddDays(2) };
+            dtpDeliveryDate = new DateTimePicker() { Location = new Point(305, 33), Size = new Size(100, 23), MinDate = DateTime.Now.AddDays(1), Value = DateTime.Now.AddDays(2) };
             gb.Controls.Add(dtpDeliveryDate);
 
+            // Кнопка
             btnGetWeather = new Button() { Text = "Получить прогноз", Location = new Point(15, 70), Size = new Size(130, 28) };
             btnGetWeather.Click += btnGetWeather_Click;
             gb.Controls.Add(btnGetWeather);
 
-            panelWeather = new Panel() { Location = new Point(15, 110), Size = new Size(340, 55), BorderStyle = BorderStyle.FixedSingle };
+            // Панель для результата (увеличена)
+            panelWeather = new Panel() { Location = new Point(15, 110), Size = new Size(380, 95), BorderStyle = BorderStyle.FixedSingle };
             gb.Controls.Add(panelWeather);
 
-            lblWeatherResult = new Label() { Location = new Point(5, 5), Size = new Size(330, 45), Font = new Font("Segoe UI", 9) };
+            // Лейбл для текста прогноза (увеличен)
+            lblWeatherResult = new Label() { Location = new Point(5, 5), Size = new Size(370, 85), Font = new Font("Segoe UI", 9) };
             panelWeather.Controls.Add(lblWeatherResult);
         }
 
@@ -917,6 +953,38 @@ namespace WarehouseManagementSystem.Forms
                   btnGetWeather.Enabled = true;
               }
           } */
+        /* private async void btnGetWeather_Click(object sender, EventArgs e)
+         {
+             string region = cmbRegion.SelectedItem?.ToString();
+             btnGetWeather.Enabled = false;
+             try
+             {
+                 var forecast = await _weatherService.GetForecast(region, dtpDeliveryDate.Value);
+                 if (forecast != null)
+                 {
+                     string text = $"🌡️ Температура: {forecast.Temperature}°C\n☁️ {forecast.Condition}";
+                     if (forecast.IsAnomaly)
+                     {
+                         text += $"\n⚠️ {forecast.Recommendation}";
+                         panelWeather.BackColor = Color.LightYellow;
+                     }
+                     else
+                     {
+                         text += "\n✅ Погодные условия в норме";
+                         panelWeather.BackColor = Color.LightGreen;
+                     }
+                     lblWeatherResult.Text = text;
+                 }
+             }
+             catch (Exception ex)
+             {
+                 lblWeatherResult.Text = $"❌ Ошибка: {ex.Message}";
+             }
+             finally
+             {
+                 btnGetWeather.Enabled = true;
+             }
+         } */
         private async void btnGetWeather_Click(object sender, EventArgs e)
         {
             string region = cmbRegion.SelectedItem?.ToString();
@@ -926,15 +994,17 @@ namespace WarehouseManagementSystem.Forms
                 var forecast = await _weatherService.GetForecast(region, dtpDeliveryDate.Value);
                 if (forecast != null)
                 {
-                    string text = $"🌡️ Температура: {forecast.Temperature}°C\n☁️ {forecast.Condition}";
+                    string text = $"🌡️ Температура: {forecast.Temperature}°C\n";
+                    text += $"☁️ Условия: {forecast.Condition}\n";
+
                     if (forecast.IsAnomaly)
                     {
-                        text += $"\n⚠️ {forecast.Recommendation}";
+                        text += $"⚠️ {forecast.Recommendation}";
                         panelWeather.BackColor = Color.LightYellow;
                     }
                     else
                     {
-                        text += "\n✅ Погодные условия в норме";
+                        text += "✅ Погодные условия в норме. Дополнительных мер не требуется.";
                         panelWeather.BackColor = Color.LightGreen;
                     }
                     lblWeatherResult.Text = text;
