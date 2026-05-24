@@ -44,7 +44,7 @@
             this.panel1.Controls.Add(this.btnAdd);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1342, 45);
+            this.panel1.Size = new System.Drawing.Size(1593, 45);
             this.panel1.TabIndex = 0;
             // 
             // label1
@@ -60,7 +60,7 @@
             // btnAdd
             // 
             this.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAdd.Location = new System.Drawing.Point(1215, 3);
+            this.btnAdd.Location = new System.Drawing.Point(946, 3);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(105, 39);
             this.btnAdd.TabIndex = 0;
@@ -69,32 +69,38 @@
             // 
             // panel2
             // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.panel2.BackColor = System.Drawing.Color.MediumAquamarine;
-            this.panel2.Location = new System.Drawing.Point(0, 631);
+            this.panel2.Location = new System.Drawing.Point(0, 551);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1338, 41);
+            this.panel2.Size = new System.Drawing.Size(1593, 121);
             this.panel2.TabIndex = 0;
             // 
             // dgvCategories
             // 
+            this.dgvCategories.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvCategories.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvCategories.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
             this.dgvCategories.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvCategories.Location = new System.Drawing.Point(28, 87);
             this.dgvCategories.Name = "dgvCategories";
             this.dgvCategories.RowHeadersWidth = 51;
             this.dgvCategories.RowTemplate.Height = 24;
-            this.dgvCategories.Size = new System.Drawing.Size(790, 458);
+            this.dgvCategories.Size = new System.Drawing.Size(1040, 458);
             this.dgvCategories.TabIndex = 1;
             // 
             // FormCategories
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1332, 665);
+            this.ClientSize = new System.Drawing.Size(1582, 665);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.dgvCategories);
             this.Name = "FormCategories";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCategories)).EndInit();

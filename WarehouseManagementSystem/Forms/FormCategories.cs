@@ -8,7 +8,7 @@ namespace WarehouseManagementSystem.Forms
 {
     public partial class FormCategories : Form
     {
-        public FormCategories()
+            public FormCategories()
         {
             InitializeComponent();
             InitializeEvents();

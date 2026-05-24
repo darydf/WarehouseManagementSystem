@@ -165,6 +165,12 @@
     </Compile>
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\AppLogger.cs" />
+    <Compile Include="Helpers\CurrencyHelper.cs" />
+    <Compile Include="Interfaces\ICategoryService.cs" />
+    <Compile Include="Interfaces\ICurrencyService.cs" />
+    <Compile Include="Interfaces\IPasswordHasher.cs" />
+    <Compile Include="Interfaces\IProductService.cs" />
+    <Compile Include="Interfaces\IShipmentService.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Helpers\DatabaseHelper.cs" />
     <Compile Include="Models\ProductDto.cs" />
@@ -256,9 +262,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\CategoryService.cs" />
+    <Compile Include="Services\ContractorCheckService.cs" />
+    <Compile Include="Services\CurrencyService.cs" />
     <Compile Include="Services\PasswordHasher.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ShipmentService.cs" />
+    <Compile Include="Services\WeatherService.cs" />
     <Compile Include="String.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -15,9 +15,38 @@ namespace WarehouseManagementSystem.Forms
     public partial class FormChooseProduct : Form
     {
         public ProductDto SelectedProduct { get; private set; }
-        public FormChooseProduct()
+            public FormChooseProduct()
         {
             InitializeComponent();
+            btnSelect.Parent = this;
+            btnCancel.Parent = this;
+
+            btnSelect.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+
+            btnSelect.Location = new Point(this.ClientSize.Width - btnSelect.Width - 10, this.ClientSize.Height - btnSelect.Height - 10);
+            btnCancel.Location = new Point(10, this.ClientSize.Height - btnCancel.Height - 10);
+
+            this.Resize += (s, e) =>
+            {
+                btnSelect.Location = new Point(this.ClientSize.Width - btnSelect.Width - 10, this.ClientSize.Height - btnSelect.Height - 10);
+                btnCancel.Location = new Point(10, this.ClientSize.Height - btnCancel.Height - 10);
+            };
+            this.WindowState = FormWindowState.Maximized; 
+            this.AutoScaleMode = AutoScaleMode.Font;
+
+            dgvProducts.Dock = DockStyle.Fill;
+            dgvProducts.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            btnSelect.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+            if (btnSelect.Parent != this)
+            {
+                var panel = btnSelect.Parent;
+                panel.Dock = DockStyle.Bottom;
+                panel.Height = 50; 
+            }
             LoadProducts();
         }
 

@@ -37,8 +37,6 @@
             this.dgvStock = new System.Windows.Forms.DataGridView();
             this.btnRemoveItem = new System.Windows.Forms.Button();
             this.btnConfirm = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStock)).BeginInit();
@@ -51,7 +49,7 @@
             this.panel1.Controls.Add(this.lblDocNumber);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1040, 37);
+            this.panel1.Size = new System.Drawing.Size(1063, 37);
             this.panel1.TabIndex = 0;
             // 
             // lblDate
@@ -139,31 +137,11 @@
             this.btnConfirm.Text = "Провести отгрузку";
             this.btnConfirm.UseVisualStyleBackColor = false;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(520, 68);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(129, 16);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "Остатки на складе";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(45, 68);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(117, 16);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Состав отгрузки";
-            // 
             // FormNewShipment
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1041, 605);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(1182, 605);
             this.Controls.Add(this.btnConfirm);
             this.Controls.Add(this.btnRemoveItem);
             this.Controls.Add(this.dgvStock);
@@ -177,7 +155,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvCart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStock)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -192,7 +169,5 @@
         private System.Windows.Forms.DataGridView dgvStock;
         private System.Windows.Forms.Button btnRemoveItem;
         private System.Windows.Forms.Button btnConfirm;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
     }
 }
