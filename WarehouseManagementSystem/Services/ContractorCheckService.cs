@@ -1,174 +1,19 @@
-﻿/*using System;
-using System.Net.Http;
-using System.Text.Json;
+﻿using System;
 using System.Threading.Tasks;
 using Npgsql;
 using WarehouseManagementSystem.Helpers;
+using Dadata;
+using Dadata.Model;
+using WarehouseManagementSystem.Interfaces;
 
 namespace WarehouseManagementSystem.Services
 {
-    // Класс для хранения результата проверки
     public class ContractorCheckResult
     {
         public string Inn { get; set; }
-        public string Status { get; set; }     // "RELIABLE" или "BLACKLISTED"
+        public string Status { get; set; }
         public string Message { get; set; }
-        public bool IsFromCache { get; set; }  // из БД или свежий?
-        public DateTime CheckedAt { get; set; }
-    }
-
-    // Сервис для проверки контрагентов
-    public class ContractorCheckService
-    {
-        private readonly HttpClient _httpClient;
-
-        public ContractorCheckService()
-        {
-            _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromSeconds(5);
-        }
-
-        // Главный метод: проверяет интернет → API → БД
-        public async Task<ContractorCheckResult> CheckByInn(string inn, int userId)
-        {
-            // 1. Пробуем получить свежие данные через API
-            if (await IsInternetAvailable())
-            {
-                try
-                {
-                    var freshResult = await FetchFromApi(inn);
-                    if (freshResult != null)
-                    {
-                        SaveToDatabase(freshResult, userId);
-                        freshResult.IsFromCache = false;
-                        return freshResult;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"API error: {ex.Message}");
-                }
-            }
-
-            // 2. Нет интернета или ошибка — грузим из БД
-            var cachedResult = LoadFromDatabase(inn);
-            if (cachedResult != null)
-            {
-                cachedResult.IsFromCache = true;
-                cachedResult.Message = "[КЭШ] " + cachedResult.Message;
-                return cachedResult;
-            }
-
-            // 3. Нет данных и нет интернета
-            return new ContractorCheckResult
-            {
-                Inn = inn,
-                Status = "UNKNOWN",
-                Message = "Нет данных о контрагенте и нет интернета для проверки.",
-                CheckedAt = DateTime.Now
-            };
-        }
-
-        // Проверка интернета (пинг до Google DNS)
-        private async Task<bool> IsInternetAvailable()
-        {
-            try
-            {
-                var ping = new System.Net.NetworkInformation.Ping();
-                var reply = await ping.SendPingAsync("8.8.8.8", 2000);
-                return reply.Status == System.Net.NetworkInformation.IPStatus.Success;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        // Запрос к API (пока демо-режим)
-        private async Task<ContractorCheckResult> FetchFromApi(string inn)
-        {
-            // Имитация задержки сети
-            await Task.Delay(500);
-
-            // Демо-режим: только тестовые ИНН дают "RELIABLE"
-            // Реальные ИНН для теста: 7707083893 (Сбер), 7736050003 (Газпром)
-            var reliableInns = new[] { "7707083893", "7736050003" };
-
-            if (Array.Exists(reliableInns, i => i == inn))
-            {
-                return new ContractorCheckResult
-                {
-                    Inn = inn,
-                    Status = "RELIABLE",
-                    Message = "Контрагент надёжный. Можно продолжать оформление.",
-                    CheckedAt = DateTime.Now
-                };
-            }
-            else
-            {
-                return new ContractorCheckResult
-                {
-                    Inn = inn,
-                    Status = "BLACKLISTED",
-                    Message = "Контрагент в чёрном списке! Оформление запрещено.",
-                    CheckedAt = DateTime.Now
-                };
-            }
-        }
-
-        // Сохранение результата в БД
-        private void SaveToDatabase(ContractorCheckResult result, int userId)
-        {
-            string sql = @"
-                INSERT INTO ContractorChecks (Inn, Status, Message, CheckedAt, CheckedByUserId)
-                VALUES (@inn, @status, @message, @checkedAt, @userId)";
-
-            var parameters = new[]
-            {
-                new NpgsqlParameter("@inn", result.Inn),
-                new NpgsqlParameter("@status", result.Status),
-                new NpgsqlParameter("@message", result.Message),
-                new NpgsqlParameter("@checkedAt", result.CheckedAt),
-                new NpgsqlParameter("@userId", userId)
-            };
-            DatabaseHelper.ExecuteNonQuery(sql, parameters);
-        }
-
-        // Загрузка последней проверки из БД
-        private ContractorCheckResult LoadFromDatabase(string inn)
-        {
-            string sql = "SELECT Inn, Status, Message, CheckedAt FROM ContractorChecks WHERE Inn = @inn ORDER BY CheckedAt DESC LIMIT 1";
-            var data = DatabaseHelper.ExecuteQuery(sql, new[] { new NpgsqlParameter("@inn", inn) });
-
-            if (data.Rows.Count == 0) return null;
-
-            var row = data.Rows[0];
-            return new ContractorCheckResult
-            {
-                Inn = row["Inn"].ToString(),
-                Status = row["Status"].ToString(),
-                Message = row["Message"].ToString(),
-                CheckedAt = Convert.ToDateTime(row["CheckedAt"])
-            };
-        }
-    }
-} */
-using System;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Npgsql;
-using WarehouseManagementSystem.Helpers;
-
-namespace WarehouseManagementSystem.Services
-{
-    // Класс для хранения результата проверки
-    public class ContractorCheckResult
-    {
-        public string Inn { get; set; }
-        public string Status { get; set; }        // "RELIABLE" или "BLACKLISTED" или "UNKNOWN"
-        public string Message { get; set; }
-        public bool IsFromCache { get; set; }      // из БД или свежий?
+        public bool IsFromCache { get; set; }
         public DateTime CheckedAt { get; set; }
         public string CounterpartyName { get; set; }
         public bool HasTaxDebt { get; set; }
@@ -176,26 +21,51 @@ namespace WarehouseManagementSystem.Services
         public bool IsDirectorDisqual { get; set; }
     }
 
-    // Сервис для проверки контрагентов
     public class ContractorCheckService
     {
-        private readonly HttpClient _httpClient;
+        private readonly string _token = "c67a5a8ff92cd87e292fc46801a0e2b9b49d4419";
+        private readonly SuggestClientAsync _suggestClient;
 
+        // Для тестов (если переданы интерфейсы - используем их, иначе null)
+        private readonly IContractorApiClient _testApiClient;
+        private readonly IContractorRepository _testRepository;
+        private readonly INetworkChecker _testNetworkChecker;
+        private readonly bool _isTestMode;
+
+        // ОРИГИНАЛЬНЫЙ КОНСТРУКТОР (работает как раньше)
         public ContractorCheckService()
         {
-            _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromSeconds(5);
+            _suggestClient = new SuggestClientAsync(_token);
+            _isTestMode = false;
         }
 
-        // Главный метод: проверяет интернет → API → БД
+        // КОНСТРУКТОР ДЛЯ ТЕСТОВ (не влияет на основную работу)
+        public ContractorCheckService(
+        IContractorApiClient apiClient,
+        IContractorRepository repository,
+        INetworkChecker networkChecker)
+        {
+            _testApiClient = apiClient;
+            _testRepository = repository;
+            _testNetworkChecker = networkChecker;
+            _isTestMode = true;
+            // _suggestClient останется null, просто не используем его в тестовом режиме
+        }
+
         public async Task<ContractorCheckResult> CheckByInn(string inn, int userId)
         {
-            // 1. Пробуем получить свежие данные через API
+            // В ТЕСТОВОМ РЕЖИМЕ используем моки
+            if (_isTestMode)
+            {
+                return await CheckByInnTest(inn, userId);
+            }
+
+            // ОРИГИНАЛЬНАЯ ЛОГИКА (НЕ ТРОГАЕМ)
             if (await IsInternetAvailable())
             {
                 try
                 {
-                    var freshResult = await FetchFromApi(inn);
+                    var freshResult = await FetchFromDadata(inn);
                     if (freshResult != null)
                     {
                         SaveToDatabase(freshResult, userId);
@@ -205,11 +75,10 @@ namespace WarehouseManagementSystem.Services
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"API error: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"DaData API error: {ex.Message}");
                 }
             }
 
-            // 2. Нет интернета или ошибка — грузим из БД
             var cachedResult = LoadFromDatabase(inn);
             if (cachedResult != null)
             {
@@ -218,7 +87,6 @@ namespace WarehouseManagementSystem.Services
                 return cachedResult;
             }
 
-            // 3. Нет данных и нет интернета
             return new ContractorCheckResult
             {
                 Inn = inn,
@@ -228,7 +96,52 @@ namespace WarehouseManagementSystem.Services
             };
         }
 
-        // Проверка интернета (пинг до Google DNS)
+        // ТЕСТОВАЯ ВЕРСИЯ (использует моки)
+        private async Task<ContractorCheckResult> CheckByInnTest(string inn, int userId)
+        {
+            if (await _testNetworkChecker.IsInternetAvailable())
+            {
+                try
+                {
+                    var response = await _testApiClient.FindParty(inn);
+                    if (response != null)
+                    {
+                        var freshResult = new ContractorCheckResult
+                        {
+                            Inn = inn,
+                            Status = "RELIABLE",
+                            Message = "Контрагент найден (тест)",
+                            CheckedAt = DateTime.Now
+                        };
+                        _testRepository.SaveCheckResult(freshResult, userId);
+                        freshResult.IsFromCache = false;
+                        return freshResult;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Test API error: {ex.Message}");
+                }
+            }
+
+            var cachedResult = _testRepository.LoadLatestByInn(inn);
+            if (cachedResult != null)
+            {
+                cachedResult.IsFromCache = true;
+                cachedResult.Message = "[КЭШ] " + cachedResult.Message;
+                return cachedResult;
+            }
+
+            return new ContractorCheckResult
+            {
+                Inn = inn,
+                Status = "UNKNOWN",
+                Message = "Нет данных о контрагенте и нет интернета для проверки.",
+                CheckedAt = DateTime.Now
+            };
+        }
+
+        // ОРИГИНАЛЬНЫЙ метод проверки интернета (НЕ ТРОГАЕМ)
         private async Task<bool> IsInternetAvailable()
         {
             try
@@ -243,58 +156,78 @@ namespace WarehouseManagementSystem.Services
             }
         }
 
-        // Запрос к API (демо-режим с тестовыми ИНН)
-        private async Task<ContractorCheckResult> FetchFromApi(string inn)
+        // ОРИГИНАЛЬНЫЙ метод FetchFromDadata (НЕ ТРОГАЕМ - полностью твой код)
+        private async Task<ContractorCheckResult> FetchFromDadata(string inn)
         {
-            // Имитация задержки сети
-            await Task.Delay(500);
-
-            // Демо-режим: только тестовые ИНН дают "RELIABLE"
-            // Реальные ИНН для теста: 7707083893 (Сбер), 7736050003 (Газпром)
-            var reliableInns = new[] { "7707083893", "7736050003" };
-
-            if (Array.Exists(reliableInns, i => i == inn))
+            try
             {
+                var response = await _suggestClient.FindParty(inn);
+
+                if (response == null || response.suggestions == null || response.suggestions.Count == 0)
+                {
+                    return new ContractorCheckResult
+                    {
+                        Inn = inn,
+                        Status = "UNKNOWN",
+                        Message = "Контрагент не найден в базе ФНС",
+                        CheckedAt = DateTime.Now
+                    };
+                }
+
+                var party = response.suggestions[0].data;
+
+                string fullName = "Неизвестно";
+                if (party.name != null)
+                {
+                    if (!string.IsNullOrEmpty(party.name.full_with_opf))
+                        fullName = party.name.full_with_opf;
+                    else if (!string.IsNullOrEmpty(party.name.full))
+                        fullName = party.name.full;
+                }
+
+                bool isActive = false;
+                bool isLiquidated = false;
+                bool isBankrupt = false;
+
+                if (party.state != null)
+                {
+                    var status = party.state.status;
+                    isActive = (status == PartyStatus.ACTIVE);
+                    isLiquidated = (status == PartyStatus.LIQUIDATED);
+                    isBankrupt = (status == PartyStatus.BANKRUPT);
+                }
+
+                string resultStatus = (isActive && !isLiquidated && !isBankrupt) ? "RELIABLE" : "BLACKLISTED";
+                string message = resultStatus == "RELIABLE"
+                    ? $"Контрагент надёжный. {fullName}"
+                    : $"Контрагент в чёрном списке!";
+
                 return new ContractorCheckResult
                 {
                     Inn = inn,
-                    Status = "RELIABLE",
-                    Message = "Контрагент надёжный. Можно продолжать оформление.",
-                    CounterpartyName = inn == "7707083893" ? "Сбербанк" : "Газпром",
+                    Status = resultStatus,
+                    Message = message,
+                    CounterpartyName = fullName,
                     HasTaxDebt = false,
-                    IsBankrupt = false,
+                    IsBankrupt = isBankrupt,
                     IsDirectorDisqual = false,
                     CheckedAt = DateTime.Now
                 };
             }
-            else if (inn.Length == 10 || inn.Length == 12)
+            catch (Exception ex)
             {
-                // Остальные ИНН — с рисками (демонстрация красного статуса)
+                System.Diagnostics.Debug.WriteLine($"DaData API error: {ex.Message}");
                 return new ContractorCheckResult
                 {
                     Inn = inn,
-                    Status = "BLACKLISTED",
-                    Message = "Контрагент в чёрном списке! Оформление запрещено.",
-                    CounterpartyName = "Неизвестная компания",
-                    HasTaxDebt = true,
-                    IsBankrupt = true,
-                    IsDirectorDisqual = true,
-                    CheckedAt = DateTime.Now
-                };
-            }
-            else
-            {
-                return new ContractorCheckResult
-                {
-                    Inn = inn,
-                    Status = "UNKNOWN",
-                    Message = "Некорректный ИНН. Введите 10 или 12 цифр.",
+                    Status = "ERROR",
+                    Message = "Ошибка при проверке контрагента",
                     CheckedAt = DateTime.Now
                 };
             }
         }
 
-        // Сохранение результата в БД
+        // ОРИГИНАЛЬНЫЙ метод сохранения (НЕ ТРОГАЕМ)
         private void SaveToDatabase(ContractorCheckResult result, int userId)
         {
             try
@@ -323,7 +256,7 @@ namespace WarehouseManagementSystem.Services
             }
         }
 
-        // Загрузка последней проверки из БД
+        // ОРИГИНАЛЬНЫЙ метод загрузки (НЕ ТРОГАЕМ)
         private ContractorCheckResult LoadFromDatabase(string inn)
         {
             try

@@ -34,9 +34,10 @@
             this.настройкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.сменитьРольToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.проверкаКонтрагентаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExit = new System.Windows.Forms.Button();
             this.panelContent = new System.Windows.Forms.Panel();
-            this.проверкаКонтрагентаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.картаСкладаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,7 +51,8 @@
             this.администрированиеToolStripMenuItem,
             this.сменитьРольToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.проверкаКонтрагентаToolStripMenuItem});
+            this.проверкаКонтрагентаToolStripMenuItem,
+            this.картаСкладаToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(1349, 33);
@@ -135,6 +137,11 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(14, 29);
             // 
+            // проверкаКонтрагентаToolStripMenuItem
+            // 
+            this.проверкаКонтрагентаToolStripMenuItem.Name = "проверкаКонтрагентаToolStripMenuItem";
+            this.проверкаКонтрагентаToolStripMenuItem.Size = new System.Drawing.Size(14, 29);
+            // 
             // btnExit
             // 
             this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -159,13 +166,13 @@
             this.panelContent.Size = new System.Drawing.Size(1349, 623);
             this.panelContent.TabIndex = 2;
             // 
-            // проверкаКонтрагентаToolStripMenuItem
+            // картаСкладаToolStripMenuItem
             // 
-          /*  this.проверкаКонтрагентаToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.проверкаКонтрагентаToolStripMenuItem.Name = "проверкаКонтрагентаToolStripMenuItem";
-            this.проверкаКонтрагентаToolStripMenuItem.Size = new System.Drawing.Size(214, 29);
-            this.проверкаКонтрагентаToolStripMenuItem.Text = "Проверка Контрагента";
-            this.проверкаКонтрагентаToolStripMenuItem.Click += new System.EventHandler(this.проверкаКонтрагентаToolStripMenuItem_Click); */
+            this.картаСкладаToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.картаСкладаToolStripMenuItem.Name = "картаСкладаToolStripMenuItem";
+            this.картаСкладаToolStripMenuItem.Size = new System.Drawing.Size(131, 29);
+            this.картаСкладаToolStripMenuItem.Text = "Карта склада";
+            this.картаСкладаToolStripMenuItem.Click += new System.EventHandler(this.картаСкладаToolStripMenuItem_Click);
             // 
             // FormAdminMain
             // 
@@ -193,5 +200,6 @@
         private System.Windows.Forms.ToolStripMenuItem настройкиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem проверкаКонтрагентаToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem картаСкладаToolStripMenuItem;
     }
 }
