@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Data;
 using Npgsql;
 using WarehouseManagementSystem.Helpers;
@@ -9,6 +8,15 @@ namespace WarehouseManagementSystem.Services
 {
     public class AuthService
     {
+        // 1. Создаем приватное поле для интерфейса
+        private readonly IPasswordHasher _passwordHasher;
+
+        // 2. Передаем зависимость через конструктор (Dependency Injection)
+        public AuthService(IPasswordHasher passwordHasher)
+        {
+            _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+        }
+
         public User Login(string email, string password)
         {
             string sql = "SELECT Id, FullName, Email, Role, PasswordHash FROM Users WHERE Email = @Email";
@@ -20,15 +28,18 @@ namespace WarehouseManagementSystem.Services
             var userData = result.Rows[0];
             string storedHash = userData["PasswordHash"].ToString();
 
-            if (!PasswordHasher.VerifyPassword(password, storedHash))
+            if (!_passwordHasher.VerifyPassword(password, storedHash))
                 throw new Exception("Неверный пароль");
+
+            string roleString = userData["Role"].ToString();
+            UserRole role = roleString == "Admin" ? UserRole.Admin : UserRole.Storekeeper;
 
             return new User
             {
                 Id = Convert.ToInt32(userData["Id"]),
                 FullName = userData["FullName"].ToString(),
                 Email = userData["Email"].ToString(),
-                Role = userData["Role"].ToString()
+                Role = role
             };
         }
 
@@ -40,7 +51,8 @@ namespace WarehouseManagementSystem.Services
             if (existingCount > 0)
                 throw new Exception("Пользователь с таким email уже существует");
 
-            string hashedPassword = PasswordHasher.HashPassword(password);
+            // 3. И здесь используем интерфейс!
+            string hashedPassword = _passwordHasher.HashPassword(password);
 
             string insertSql = @"INSERT INTO Users (FullName, Email, PasswordHash, Role) 
                                 VALUES (@FullName, @Email, @PasswordHash, 'Storekeeper') RETURNING Id";
@@ -59,7 +71,7 @@ namespace WarehouseManagementSystem.Services
                 Id = newUserId,
                 FullName = fullName,
                 Email = email,
-                Role = "Storekeeper"
+                Role = UserRole.Storekeeper
             };
         }
 
@@ -71,4 +83,3 @@ namespace WarehouseManagementSystem.Services
         }
     }
 }
-

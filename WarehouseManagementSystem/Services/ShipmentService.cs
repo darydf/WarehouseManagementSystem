@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using WarehouseManagementSystem.Helpers;
-using WarehouseManagementSystem.Models;
+using WarehouseManagementSystem.Models; 
 
 namespace WarehouseManagementSystem.Services
 {
-    public class ShipmentService
+    public class ShipmentService : IShipmentService
     {
         public Shipment CreateDraft()
         {

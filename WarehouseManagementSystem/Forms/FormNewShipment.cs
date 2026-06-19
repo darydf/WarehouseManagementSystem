@@ -1,22 +1,51 @@
-﻿using Npgsql;
+﻿using Microsoft.VisualBasic;
+using Npgsql;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using WarehouseManagementSystem.Helpers;
 using WarehouseManagementSystem.Models;
+using WarehouseManagementSystem.Services;
 
 namespace WarehouseManagementSystem.Forms
 {
     public partial class FormNewShipment : Form
     {
         private DataTable _cartTable;
+        // Блок проверки контрагента
+        private TextBox txtInn;
+        private Button btnCheckCounterparty;
+        private Panel panelCheckResult;
+        private Label lblCheckStatus;
+        private ContractorCheckService _contractorService;
+        private ContractorCheckResult _currentCheck;
+
+        // Блок погоды
+        private ComboBox cmbRegion;
+        private DateTimePicker dtpDeliveryDate;
+        private Button btnGetWeather;
+        private Panel panelWeather;
+        private Label lblWeatherResult;
+        private WeatherService _weatherService;
         private string _shipmentNumber;
 
         public FormNewShipment()
         {
             InitializeComponent();
+            _weatherService = new WeatherService();
+            _contractorService = new ContractorCheckService();
+            AddContractorBlock();
+            AddWeatherBlock();
+
+            ShiftAllElementsDown(320); 
+
             InitializeEvents();
+
+            
             InitializeCart();
             LoadStock();
             GenerateShipmentNumber();
@@ -24,6 +53,125 @@ namespace WarehouseManagementSystem.Forms
             SetupButtons();
             Text = "Оформление новой отгрузки";
         }
+
+        private void ShiftAllElementsDown(int offset)
+        {
+            if (dgvCart != null) dgvCart.Location = new Point(dgvCart.Location.X, dgvCart.Location.Y + offset);
+            if (dgvStock != null) dgvStock.Location = new Point(dgvStock.Location.X, dgvStock.Location.Y + offset);
+
+            if (btnAddItem != null) btnAddItem.Location = new Point(btnAddItem.Location.X, btnAddItem.Location.Y + offset);
+            if (btnRemoveItem != null) btnRemoveItem.Location = new Point(btnRemoveItem.Location.X, btnRemoveItem.Location.Y + offset);
+            if (btnRefreshStock != null) btnRefreshStock.Location = new Point(btnRefreshStock.Location.X, btnRefreshStock.Location.Y + offset);
+            if (btnConfirm != null) btnConfirm.Location = new Point(btnConfirm.Location.X, btnConfirm.Location.Y + offset);
+
+            this.Height += offset;
+        }
+        private void AddTopPanels()
+        {
+            int topOffset = 180; 
+
+            dgvCart.Location = new Point(dgvCart.Location.X, dgvCart.Location.Y + topOffset);
+            dgvStock.Location = new Point(dgvStock.Location.X, dgvStock.Location.Y + topOffset);
+            btnAddItem.Location = new Point(btnAddItem.Location.X, btnAddItem.Location.Y + topOffset);
+            btnRemoveItem.Location = new Point(btnRemoveItem.Location.X, btnRemoveItem.Location.Y + topOffset);
+            btnRefreshStock.Location = new Point(btnRefreshStock.Location.X, btnRefreshStock.Location.Y + topOffset);
+            lblDocNumber.Location = new Point(lblDocNumber.Location.X, 20); // оставляем вверху
+
+            this.Height += topOffset;
+
+            GroupBox gbContractor = new GroupBox();
+            gbContractor.Text = "ПРОВЕРКА КОНТРАГЕНТА";
+            gbContractor.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            gbContractor.Location = new Point(20, 50);
+            gbContractor.Size = new Size(350, 180);
+            this.Controls.Add(gbContractor);
+
+            Label lblInn = new Label();
+            lblInn.Text = "ИНН:";
+            lblInn.Location = new Point(15, 35);
+            lblInn.Size = new Size(40, 25);
+            gbContractor.Controls.Add(lblInn);
+
+            txtInn = new TextBox();
+            txtInn.Location = new Point(55, 33);
+            txtInn.Size = new Size(150, 23);
+            gbContractor.Controls.Add(txtInn);
+
+            btnCheckCounterparty = new Button();
+            btnCheckCounterparty.Text = "Проверить";
+            btnCheckCounterparty.Location = new Point(215, 31);
+            btnCheckCounterparty.Size = new Size(100, 28);
+            btnCheckCounterparty.Click += btnCheckCounterparty_Click;
+            gbContractor.Controls.Add(btnCheckCounterparty);
+
+            panelCheckResult = new Panel();
+            panelCheckResult.Location = new Point(15, 70);
+            panelCheckResult.Size = new Size(310, 95);
+            panelCheckResult.BorderStyle = BorderStyle.FixedSingle;
+            gbContractor.Controls.Add(panelCheckResult);
+
+            lblCheckStatus = new Label();
+            lblCheckStatus.Location = new Point(10, 10);
+            lblCheckStatus.Size = new Size(280, 75);
+            panelCheckResult.Controls.Add(lblCheckStatus);
+
+            // ========== ПРАВЫЙ БЛОК: ПРОГНОЗ ПОГОДЫ ==========
+            GroupBox gbWeather = new GroupBox();
+            gbWeather.Text = "ПРОГНОЗ ПОГОДЫ";
+            gbWeather.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            gbWeather.Location = new Point(400, 50);
+            gbWeather.Size = new Size(350, 180);
+            this.Controls.Add(gbWeather);
+
+            Label lblRegion = new Label();
+            lblRegion.Text = "Регион:";
+            lblRegion.Location = new Point(15, 35);
+            lblRegion.Size = new Size(50, 25);
+            gbWeather.Controls.Add(lblRegion);
+
+            cmbRegion = new ComboBox();
+            cmbRegion.Location = new Point(70, 33);
+            cmbRegion.Size = new Size(120, 23);
+            cmbRegion.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbRegion.Items.AddRange(new[] { "Москва", "Санкт-Петербург", "Новосибирск", "Екатеринбург", "Казань", "Норильск" });
+            cmbRegion.SelectedIndex = 0;
+            gbWeather.Controls.Add(cmbRegion);
+
+            Label lblDate = new Label();
+            lblDate.Text = "Дата:";
+            lblDate.Location = new Point(200, 35);
+            lblDate.Size = new Size(40, 25);
+            gbWeather.Controls.Add(lblDate);
+
+            dtpDeliveryDate = new DateTimePicker();
+            dtpDeliveryDate.Location = new Point(240, 33);
+            dtpDeliveryDate.Size = new Size(100, 23);
+            dtpDeliveryDate.MinDate = DateTime.Now.AddDays(1);
+            dtpDeliveryDate.Value = DateTime.Now.AddDays(2);
+            gbWeather.Controls.Add(dtpDeliveryDate);
+
+            btnGetWeather = new Button();
+            btnGetWeather.Text = "Получить прогноз";
+            btnGetWeather.Location = new Point(15, 70);
+            btnGetWeather.Size = new Size(120, 30);
+            btnGetWeather.Click += btnGetWeather_Click;
+            gbWeather.Controls.Add(btnGetWeather);
+
+            panelWeather = new Panel();
+            panelWeather.Location = new Point(15, 110);
+            panelWeather.Size = new Size(310, 55);
+            panelWeather.BorderStyle = BorderStyle.FixedSingle;
+            gbWeather.Controls.Add(panelWeather);
+
+            lblWeatherResult = new Label();
+            lblWeatherResult.Location = new Point(10, 5);
+            lblWeatherResult.Size = new Size(280, 45);
+            panelWeather.Controls.Add(lblWeatherResult);
+        }
+
+        
+
+        
 
         private void InitializeEvents()
         {
@@ -97,11 +245,11 @@ namespace WarehouseManagementSystem.Forms
                 dgvStock.Columns["StockQuantity"].HeaderText = "Остаток";
                 dgvStock.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-                MessageBox.Show($"Загружено товаров с остатками: {data.Rows.Count}");
+                MessageBox.Show(string.Format(String.ProductsLoaded, data.Rows.Count));
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка загрузки: " + ex.Message);
+                MessageBox.Show(string.Format(String.LoadError, ex.Message));
             }
         }
 
@@ -127,23 +275,21 @@ namespace WarehouseManagementSystem.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка обновления: " + ex.Message);
+                MessageBox.Show(string.Format(String.UpdateError, ex.Message));
             }
         }
 
         private void GenerateShipmentNumber()
         {
-            try
-            {
-                string sql = "SELECT generate_shipment_number()";
-                _shipmentNumber = DatabaseHelper.ExecuteScalar(sql).ToString();
-                lblDocNumber.Text = $"Номер документа: {_shipmentNumber}";
-            }
-            catch
-            {
-                _shipmentNumber = $"INV-{DateTime.Now:yyyyMMdd}-001";
-                lblDocNumber.Text = $"Номер документа: {_shipmentNumber}";
-            }
+            string datePart = DateTime.Now.ToString("yyyyMMdd");
+
+            string sql = "SELECT COUNT(*) FROM Shipments WHERE ShipmentNumber LIKE @pattern";
+            var param = new NpgsqlParameter("@pattern", $"SHP-{datePart}-%");
+            var count = Convert.ToInt32(DatabaseHelper.ExecuteScalar(sql, new[] { param }));
+
+            var nextNumber = count + 1;
+            _shipmentNumber = $"SHP-{datePart}-{nextNumber:D3}";
+            lblDocNumber.Text = $"Номер документа: {_shipmentNumber}";
         }
 
         private void btnAddItem_Click(object sender, EventArgs e)
@@ -157,24 +303,193 @@ namespace WarehouseManagementSystem.Forms
             var productId = Convert.ToInt32(dgvStock.CurrentRow.Cells["Id"].Value);
             var article = dgvStock.CurrentRow.Cells["Article"].Value.ToString();
             var name = dgvStock.CurrentRow.Cells["Name"].Value.ToString();
-            var stockQuantity = Convert.ToDecimal(dgvStock.CurrentRow.Cells["StockQuantity"].Value);
+            var totalStock = Convert.ToDecimal(dgvStock.CurrentRow.Cells["StockQuantity"].Value);
 
-            var selectForm = new FormSelectProduct(productId, article, name, stockQuantity, 0);
-            if (selectForm.ShowDialog() == DialogResult.OK)
+            // Получаем все партии товара
+            DataTable batches = GetProductBatches(productId);
+
+            // Считаем количество в каждой категории
+            decimal expiredQty = 0;
+            decimal nearExpiryQty = 0;
+            decimal freshQty = 0;
+            int discountDays = GetDiscountDays();
+            int discountPercent = GetDiscountPercent();
+            int markupPercent = GetMarkupPercent();
+            decimal purchasePrice = GetProductPrice(productId);
+
+            foreach (DataRow batch in batches.Rows)
             {
-                var selected = selectForm.SelectedProduct;
-
-                var existing = _cartTable.Select($"ProductId = {selected.ProductId}");
-                if (existing.Length > 0)
+                DateTime? expiryDate = null;
+                if (batch["ExpiryDate"] != DBNull.Value)
                 {
-                    MessageBox.Show("Этот товар уже добавлен в отгрузку");
-                    return;
+                    expiryDate = Convert.ToDateTime(batch["ExpiryDate"]);
                 }
 
-                _cartTable.Rows.Add(selected.ProductId, selected.Article, selected.Name, selected.Quantity, 0);
-                MessageBox.Show($"Добавлено: {selected.Name} - {selected.Quantity} шт.");
+                decimal qty = Convert.ToDecimal(batch["Quantity"]);
+
+                if (expiryDate.HasValue)
+                {
+                    int daysLeft = (expiryDate.Value - DateTime.Now).Days;
+                    if (daysLeft < 0)
+                    {
+                        expiredQty += qty;  // Просроченные товары
+                    }
+                    else if (daysLeft <= discountDays && daysLeft >= 0)
+                    {
+                        nearExpiryQty += qty;  // С истекающим сроком (скидка)
+                    }
+                    else
+                    {
+                        freshQty += qty;  // Свежие (без скидки)
+                    }
+                }
+                else
+                {
+                    freshQty += qty;  // Срок не указан - свежие
+                }
             }
+
+            // Проверка: если есть просроченные товары, отгрузка запрещена
+            if (expiredQty > 0)
+            {
+                MessageBox.Show($"Товар '{name}' содержит просроченные партии ({expiredQty} шт.)!\n" +
+                                "Отгрузка просроченных товаров невозможна.\n" +
+                                "Используйте форму 'Списание просрочки' (доступна администратору).",
+                                "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Если нет свежих и нет товаров с истекающим сроком
+            if (nearExpiryQty == 0 && freshQty == 0)
+            {
+                MessageBox.Show($"Нет доступных партий для товара '{name}'");
+                return;
+            }
+
+            // Информация о наличии
+            string infoMsg = $"Товар: {name}\n";
+            infoMsg += $"Всего на складе: {totalStock} шт.\n";
+            if (nearExpiryQty > 0)
+            {
+                infoMsg += $"С истекающим сроком: {nearExpiryQty} шт. (скидка {discountPercent}%)\n";
+            }
+            if (freshQty > 0)
+            {
+                infoMsg += $"Свежих: {freshQty} шт.\n";
+            }
+            infoMsg += $"Введите количество для отгрузки:";
+
+            // Простое окно ввода количества
+            Form inputForm = new Form();
+            inputForm.Text = "Отгрузка товара";
+            inputForm.Width = 300;
+            inputForm.Height = 220;
+            inputForm.FormBorderStyle = FormBorderStyle.FixedDialog;
+            inputForm.StartPosition = FormStartPosition.CenterParent;
+            inputForm.MaximizeBox = false;
+            inputForm.MinimizeBox = false;
+
+            Label lblInfo = new Label();
+            lblInfo.Text = infoMsg;
+            lblInfo.Location = new System.Drawing.Point(10, 10);
+            lblInfo.Size = new System.Drawing.Size(260, 110);
+            lblInfo.Font = new Font("Arial", 9);
+
+            Label lblQty = new Label();
+            lblQty.Text = "Количество:";
+            lblQty.Location = new System.Drawing.Point(10, 130);
+            lblQty.Size = new System.Drawing.Size(80, 25);
+
+            TextBox txtQty = new TextBox();
+            txtQty.Text = "1";
+            txtQty.Location = new System.Drawing.Point(90, 130);
+            txtQty.Size = new System.Drawing.Size(100, 25);
+
+            Button btnOk = new Button();
+            btnOk.Text = "OK";
+            btnOk.Location = new System.Drawing.Point(200, 128);
+            btnOk.Size = new System.Drawing.Size(70, 30);
+            btnOk.DialogResult = DialogResult.OK;
+
+            Button btnCancel = new Button();
+            btnCancel.Text = "Отмена";
+            btnCancel.Location = new System.Drawing.Point(200, 160);
+            btnCancel.Size = new System.Drawing.Size(70, 30);
+            btnCancel.DialogResult = DialogResult.Cancel;
+
+            inputForm.Controls.Add(lblInfo);
+            inputForm.Controls.Add(lblQty);
+            inputForm.Controls.Add(txtQty);
+            inputForm.Controls.Add(btnOk);
+            inputForm.Controls.Add(btnCancel);
+
+            if (inputForm.ShowDialog() != DialogResult.OK) return;
+
+            if (!decimal.TryParse(txtQty.Text, out decimal quantity) || quantity <= 0)
+            {
+                MessageBox.Show("Введите корректное количество");
+                return;
+            }
+
+            if (quantity > totalStock)
+            {
+                MessageBox.Show($"Недостаточно товара. Доступно: {totalStock} шт.");
+                return;
+            }
+
+            decimal takeFromNearExpiry = Math.Min(quantity, nearExpiryQty);
+            decimal takeFromFresh = quantity - takeFromNearExpiry;
+
+            decimal priceWithMarkup = purchasePrice * (1 + markupPercent / 100m);
+            decimal priceWithDiscount = priceWithMarkup * (1 - discountPercent / 100m);
+
+            if (takeFromNearExpiry > 0)
+            {
+                _cartTable.Rows.Add(productId, article, name + " (скидка)", takeFromNearExpiry, priceWithDiscount);
+            }
+            if (takeFromFresh > 0)
+            {
+                _cartTable.Rows.Add(productId, article, name, takeFromFresh, priceWithMarkup);
+            }
+
+            string resultMsg = $"Добавлено: {name}\n";
+            resultMsg += $"Всего: {quantity} шт.\n";
+            if (takeFromNearExpiry > 0)
+            {
+                resultMsg += $"Со скидкой: {takeFromNearExpiry} шт. x {priceWithDiscount:N2} = {takeFromNearExpiry * priceWithDiscount:N2} руб.\n";
+            }
+            if (takeFromFresh > 0)
+            {
+                resultMsg += $"Без скидки: {takeFromFresh} шт. x {priceWithMarkup:N2} = {takeFromFresh * priceWithMarkup:N2} руб.\n";
+            }
+            resultMsg += $"Итого: {(takeFromNearExpiry * priceWithDiscount) + (takeFromFresh * priceWithMarkup):N2} руб.";
+
+            MessageBox.Show(resultMsg, "Добавлено в отгрузку", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        private DataTable GetProductBatches(int productId)
+        {
+            string sql = @"
+        SELECT 
+            Id,
+            Quantity,
+            ExpiryDate
+        FROM StockBatches 
+        WHERE ProductId = @pid AND Quantity > 0
+        ORDER BY ExpiryDate ASC NULLS LAST";
+
+            var param = new NpgsqlParameter("@pid", productId);
+            return DatabaseHelper.ExecuteQuery(sql, new[] { param });
+        }
+
+        private decimal GetProductPrice(int productId)
+        {
+            string sql = "SELECT PurchasePrice FROM Products WHERE Id = @id";
+            var param = new NpgsqlParameter("@id", productId);
+            var result = DatabaseHelper.ExecuteScalar(sql, new[] { param });
+            return result != null ? Convert.ToDecimal(result) : 0;
+        }
+
 
         private void btnRemoveItem_Click(object sender, EventArgs e)
         {
@@ -188,14 +503,14 @@ namespace WarehouseManagementSystem.Forms
             }
             else
             {
-                MessageBox.Show("Выберите позицию для удаления");
+                MessageBox.Show(String.SelectItemToDelete);
             }
         }
 
         private void btnRefreshStock_Click(object sender, EventArgs e)
         {
             RefreshStock();
-            MessageBox.Show("Список остатков обновлен");
+            MessageBox.Show(String.StockRefreshed);
         }
 
         private void btnConfirm_Click(object sender, EventArgs e)
@@ -203,15 +518,15 @@ namespace WarehouseManagementSystem.Forms
              
             if (Session.CurrentUser == null)
             {
-                MessageBox.Show("Ошибка: пользователь не авторизован!");
+                MessageBox.Show(String.UserNotAuthorized);
                 return;
             }
 
-            MessageBox.Show($"ID пользователя: {Session.CurrentUser.Id}\nИмя: {Session.CurrentUser.FullName}", "Проверка");
+            MessageBox.Show(string.Format(String.UserInfoMessage, Session.CurrentUser.Id, Session.CurrentUser.FullName), String.UserCheckTitle);
 
             if (_cartTable.Rows.Count == 0)
             {
-                MessageBox.Show("Добавьте товары в отгрузку");
+                MessageBox.Show(String.AddProductsToShipment);
                 return;
             }
 
@@ -221,8 +536,8 @@ namespace WarehouseManagementSystem.Forms
                 itemsList += $"- {row["Name"]}: {row["Quantity"]} шт.\n";
             }
 
-            var confirm = MessageBox.Show($"{itemsList}\nПодтвердить отгрузку? Товары будут списаны.",
-                "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var confirm = MessageBox.Show(string.Format(String.ConfirmShipmentMessage, itemsList),
+    String.ConfirmShipmentTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (confirm != DialogResult.Yes) return;
 
@@ -243,41 +558,47 @@ namespace WarehouseManagementSystem.Forms
                             cmd.Parameters.AddWithValue("@Date", DateTime.Now);
                             cmd.Parameters.AddWithValue("@StorekeeperId", Session.CurrentUser.Id);
                             shipmentId = Convert.ToInt32(cmd.ExecuteScalar());
-                            MessageBox.Show($"Создана отгрузка ID={shipmentId}");
+                            MessageBox.Show(string.Format(String.ShipmentCreated, shipmentId));
                         }
  
                         foreach (DataRow row in _cartTable.Rows)
                         {
                             var productId = Convert.ToInt32(row["ProductId"]);
                             var quantity = Convert.ToDecimal(row["Quantity"]);
+                            var price = Convert.ToDecimal(row["Price"]);
                             var productName = row["Name"].ToString();
 
-                        
+
+
                             string detailSql = @"INSERT INTO ShipmentDetails (ShipmentId, ProductId, Quantity, PriceAtShipment) 
-                                                VALUES (@ShipmentId, @ProductId, @Quantity, 0)";
+                            VALUES (@ShipmentId, @ProductId, @Quantity, @Price)";
                             using (var detailCmd = new NpgsqlCommand(detailSql, conn, tran))
                             {
                                 detailCmd.Parameters.AddWithValue("@ShipmentId", shipmentId);
                                 detailCmd.Parameters.AddWithValue("@ProductId", productId);
                                 detailCmd.Parameters.AddWithValue("@Quantity", quantity);
+                                detailCmd.Parameters.AddWithValue("@Price", price);
                                 detailCmd.ExecuteNonQuery();
                             }
- 
-                            string stockSql = "UPDATE StockBalances SET Quantity = Quantity - @Quantity WHERE ProductId = @ProductId";
-                            using (var stockCmd = new NpgsqlCommand(stockSql, conn, tran))
+
+                            // FIFO
+                            try
                             {
-                                stockCmd.Parameters.AddWithValue("@Quantity", quantity);
-                                stockCmd.Parameters.AddWithValue("@ProductId", productId);
-                                int rows = stockCmd.ExecuteNonQuery();
-                                MessageBox.Show($"Списано {quantity} шт. товара {productName}. Затронуто строк: {rows}");
+                                ShipProduct(productId, quantity);
+                                MessageBox.Show(string.Format(String.ItemsWrittenOffFifo, quantity, productName));
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(string.Format(String.WriteOffError, productName, ex.Message));
+                                throw;
                             }
                         }
                         tran.Commit();
-                        MessageBox.Show("Транзакция завершена!");
+                        MessageBox.Show(String.TransactionCompleted);
                     }
                 }
 
-                MessageBox.Show($"✅ Отгрузка №{_shipmentNumber} проведена!");
+                MessageBox.Show(string.Format(String.ShipmentCompleted, _shipmentNumber));
 
                 _cartTable.Clear();
                 RefreshStock();
@@ -285,8 +606,257 @@ namespace WarehouseManagementSystem.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Ошибка: {ex.Message}");
+                MessageBox.Show(string.Format(String.ErrorPrefix, ex.Message));
+            }
+
+
+        }
+
+        private void ShipProduct(int productId, decimal quantityToShip)
+        {
+            decimal remaining = quantityToShip;
+
+            string sql = @"
+    SELECT Id, Quantity, ExpiryDate, ReceivedDate FROM StockBatches 
+    WHERE ProductId = @productId AND Quantity > 0
+    ORDER BY ExpiryDate ASC NULLS LAST, ReceivedDate ASC";
+
+            var parameters = new[] { new NpgsqlParameter("@productId", productId) };
+            var batches = DatabaseHelper.ExecuteQuery(sql, parameters);
+
+            if (batches.Rows.Count == 0)
+            {
+                throw new Exception($"Нет партий товара для списания");
+            }
+
+            foreach (DataRow batch in batches.Rows)
+            {
+                if (remaining <= 0) break;
+
+                int batchId = Convert.ToInt32(batch["Id"]);
+                decimal batchQty = Convert.ToDecimal(batch["Quantity"]);
+                decimal take = Math.Min(remaining, batchQty);
+                Debug.WriteLine($"Списано {take} кг из партии {batchId}");
+
+                if (take >= batchQty)
+                {
+                    string deleteSql = "DELETE FROM StockBatches WHERE Id = @batchId";
+                    DatabaseHelper.ExecuteNonQuery(deleteSql, new[]
+                    {
+                new NpgsqlParameter("@batchId", batchId)
+            });
+                }
+                else
+                {
+                    string updateSql = "UPDATE StockBatches SET Quantity = Quantity - @take WHERE Id = @batchId";
+                    DatabaseHelper.ExecuteNonQuery(updateSql, new[]
+                    {
+                new NpgsqlParameter("@take", take),
+                new NpgsqlParameter("@batchId", batchId)
+            });
+                }
+
+                remaining -= take;
+            }
+
+            if (remaining > 0)
+            {
+                throw new Exception($"Недостаточно товара на складе. Не хватает: {remaining}");
+            }
+
+            string updateBalance = "UPDATE StockBalances SET Quantity = Quantity - @qty WHERE ProductId = @pid";
+            DatabaseHelper.ExecuteNonQuery(updateBalance, new[]
+            {
+        new NpgsqlParameter("@qty", quantityToShip),
+        new NpgsqlParameter("@pid", productId)
+    });
+        }
+        private int GetMarkupPercent()
+        {
+            try
+            {
+                string sql = "SELECT SettingValue FROM AppSettings WHERE SettingKey = 'MarkupPercent'";
+                var result = DatabaseHelper.ExecuteScalar(sql);
+                return result != null ? Convert.ToInt32(result) : 20;
+            }
+            catch
+            {
+                return 20;
+            }
+
+        }
+        // Получить срок годности партии
+        private DateTime? GetBatchExpiryDate(int productId)
+        {
+            string sql = @"
+        SELECT ExpiryDate FROM StockBatches 
+        WHERE ProductId = @pid AND Quantity > 0
+        ORDER BY ExpiryDate ASC NULLS LAST
+        LIMIT 1";
+            var param = new NpgsqlParameter("@pid", productId);
+            var result = DatabaseHelper.ExecuteScalar(sql, new[] { param });
+            return result != null && result != DBNull.Value ? Convert.ToDateTime(result) : (DateTime?)null;
+        }
+
+        // Получить процент скидки из настроек
+        private int GetDiscountPercent()
+        {
+            try
+            {
+                string sql = "SELECT SettingValue FROM AppSettings WHERE SettingKey = 'DiscountPercentage'";
+                var result = DatabaseHelper.ExecuteScalar(sql);
+                return result != null ? Convert.ToInt32(result) : 20;
+            }
+            catch
+            {
+                return 20;
+            }
+        }
+
+        private int GetDiscountDays()
+        {
+            try
+            {
+                string sql = "SELECT SettingValue FROM AppSettings WHERE SettingKey = 'DiscountDaysBeforeExpiry'";
+                var result = DatabaseHelper.ExecuteScalar(sql);
+                return result != null ? Convert.ToInt32(result) : 30;
+            }
+            catch
+            {
+                return 30;
+            }
+        }
+        private void AddContractorBlock()
+        {
+            GroupBox gb = new GroupBox();
+            gb.Text = "ПРОВЕРКА КОНТРАГЕНТА";
+            gb.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            gb.Location = new Point(20, 50);
+            gb.Size = new Size(380, 160);
+            this.Controls.Add(gb);
+
+            Label lblInn = new Label() { Text = "ИНН:", Location = new Point(15, 35), Size = new Size(45, 25) };
+            gb.Controls.Add(lblInn);
+
+            txtInn = new TextBox() { Location = new Point(65, 33), Size = new Size(160, 23) };
+            gb.Controls.Add(txtInn);
+
+            btnCheckCounterparty = new Button() { Text = "Проверить", Location = new Point(235, 31), Size = new Size(100, 28) };
+            btnCheckCounterparty.Click += btnCheckCounterparty_Click;
+            gb.Controls.Add(btnCheckCounterparty);
+
+            panelCheckResult = new Panel() { Location = new Point(15, 75), Size = new Size(340, 65), BorderStyle = BorderStyle.FixedSingle };
+            gb.Controls.Add(panelCheckResult);
+
+            lblCheckStatus = new Label() { Location = new Point(10, 5), Size = new Size(320, 55) };
+            panelCheckResult.Controls.Add(lblCheckStatus);
+        }
+
+        private void AddWeatherBlock()
+        {
+            GroupBox gb = new GroupBox();
+            gb.Text = "ПРОГНОЗ ПОГОДЫ";
+            gb.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            gb.Location = new Point(420, 50);
+            gb.Size = new Size(420, 220); 
+            this.Controls.Add(gb);
+
+            // Регион
+            Label lblRegion = new Label() { Text = "Регион:", Location = new Point(15, 35), Size = new Size(60, 25), Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+            gb.Controls.Add(lblRegion);
+
+            cmbRegion = new ComboBox() { Location = new Point(80, 33), Size = new Size(150, 23), DropDownStyle = ComboBoxStyle.DropDownList };
+            cmbRegion.Items.AddRange(new[] { "Москва", "Санкт-Петербург", "Новосибирск", "Екатеринбург", "Казань", "Норильск" });
+            cmbRegion.SelectedIndex = 0;
+            gb.Controls.Add(cmbRegion);
+
+            // Дата
+            Label lblDateTitle = new Label() { Text = "Дата:", Location = new Point(250, 35), Size = new Size(50, 25), Font = new Font("Segoe UI", 11, FontStyle.Bold) };
+            gb.Controls.Add(lblDateTitle);
+
+            dtpDeliveryDate = new DateTimePicker() { Location = new Point(305, 33), Size = new Size(100, 23), MinDate = DateTime.Now.AddDays(1), Value = DateTime.Now.AddDays(2) };
+            gb.Controls.Add(dtpDeliveryDate);
+
+            btnGetWeather = new Button() { Text = "Получить прогноз", Location = new Point(15, 70), Size = new Size(130, 28) };
+            btnGetWeather.Click += btnGetWeather_Click;
+            gb.Controls.Add(btnGetWeather);
+
+            panelWeather = new Panel() { Location = new Point(15, 110), Size = new Size(380, 95), BorderStyle = BorderStyle.FixedSingle };
+            gb.Controls.Add(panelWeather);
+
+            lblWeatherResult = new Label() { Location = new Point(5, 5), Size = new Size(370, 85), Font = new Font("Segoe UI", 9) };
+            panelWeather.Controls.Add(lblWeatherResult);
+        }
+
+        private async void btnCheckCounterparty_Click(object sender, EventArgs e)
+        {
+            string inn = txtInn.Text.Trim();
+            if (string.IsNullOrEmpty(inn) || (inn.Length != 10 && inn.Length != 12))
+            {
+                MessageBox.Show("Введите корректный ИНН (10 или 12 цифр)");
+                return;
+            }
+
+            btnCheckCounterparty.Enabled = false;
+            try
+            {
+                _currentCheck = await _contractorService.CheckByInn(inn, 1);
+                if (_currentCheck.Status == "RELIABLE")
+                {
+                    panelCheckResult.BackColor = Color.LightGreen;
+                    lblCheckStatus.Text = _currentCheck.Message;
+                    btnConfirm.Enabled = true;
+                }
+                else
+                {
+                    panelCheckResult.BackColor = Color.LightCoral;
+                    lblCheckStatus.Text = _currentCheck.Message;
+                    btnConfirm.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}");
+            }
+            finally
+            {
+                btnCheckCounterparty.Enabled = true;
+            }
+        }
+
+        private async void btnGetWeather_Click(object sender, EventArgs e)
+        {
+            string region = cmbRegion.SelectedItem?.ToString();
+            btnGetWeather.Enabled = false;
+            try
+            {
+                var forecast = await _weatherService.GetForecast(region, dtpDeliveryDate.Value);
+                if (forecast != null)
+                {
+                    string text = $"🌡️ Температура: {forecast.Temperature}°C\n";
+                    text += $"☁️ Условия: {forecast.Condition}\n";
+
+                    if (forecast.IsAnomaly)
+                    {
+                        text += $"⚠️ {forecast.Recommendation}";
+                        panelWeather.BackColor = Color.LightYellow;
+                    }
+                    else
+                    {
+                        text += "✅ Погодные условия в норме. Дополнительных мер не требуется.";
+                        panelWeather.BackColor = Color.LightGreen;
+                    }
+                    lblWeatherResult.Text = text;
+                }
+            }
+            catch (Exception ex)
+            {
+                lblWeatherResult.Text = $"❌ Ошибка: {ex.Message}";
+            }
+            finally
+            {
+                btnGetWeather.Enabled = true;
             }
         }
     }
-}
+} 

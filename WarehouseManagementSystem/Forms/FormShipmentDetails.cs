@@ -24,6 +24,10 @@ namespace WarehouseManagementSystem.Forms
             btnClose.Click += btnClose_Click;
         }
 
+        /// <summary>
+        /// Загружает детали отгрузки из базы данных.
+        /// Показывает информацию об отгрузке, список товаров и итоговую сумму.
+        /// </summary>
         private void LoadDetails()
         {
             try
@@ -86,5 +90,6 @@ namespace WarehouseManagementSystem.Forms
         {
             Close();
         }
+
     }
 }

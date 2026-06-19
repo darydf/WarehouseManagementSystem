@@ -88,11 +88,11 @@
             this.dgvProducts.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dgvProducts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvProducts.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.dgvProducts.Location = new System.Drawing.Point(48, 136);
+            this.dgvProducts.Location = new System.Drawing.Point(30, 143);
             this.dgvProducts.Name = "dgvProducts";
             this.dgvProducts.RowHeadersWidth = 51;
             this.dgvProducts.RowTemplate.Height = 24;
-            this.dgvProducts.Size = new System.Drawing.Size(380, 179);
+            this.dgvProducts.Size = new System.Drawing.Size(494, 179);
             this.dgvProducts.TabIndex = 5;
             // 
             // lblQuantity
@@ -117,7 +117,7 @@
             this.panel1.BackColor = System.Drawing.Color.MediumAquamarine;
             this.panel1.Location = new System.Drawing.Point(1, 505);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(475, 42);
+            this.panel1.Size = new System.Drawing.Size(541, 42);
             this.panel1.TabIndex = 9;
             // 
             // panel2
@@ -125,7 +125,7 @@
             this.panel2.BackColor = System.Drawing.Color.MediumAquamarine;
             this.panel2.Location = new System.Drawing.Point(1, 2);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(475, 39);
+            this.panel2.Size = new System.Drawing.Size(541, 39);
             this.panel2.TabIndex = 10;
             // 
             // lblSearch
@@ -151,7 +151,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 547);
+            this.ClientSize = new System.Drawing.Size(545, 547);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.txtSearch);

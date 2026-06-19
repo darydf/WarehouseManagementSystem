@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Data;
+using System.Collections.Generic;
 using Npgsql;
 using WarehouseManagementSystem.Helpers;
 using WarehouseManagementSystem.Models;
 
 namespace WarehouseManagementSystem.Services
 {
-    public class ProductService
+    public class ProductService : IProductService
     {
         public DataTable GetAllProducts(string searchText = "")
         {
@@ -62,7 +63,7 @@ namespace WarehouseManagementSystem.Services
             if (excludeId.HasValue)
                 sql += " AND Id != @Id";
 
-            var parameters = new System.Collections.Generic.List<NpgsqlParameter> { new NpgsqlParameter("@Article", article) };
+            var parameters = new List<NpgsqlParameter> { new NpgsqlParameter("@Article", article) };
             if (excludeId.HasValue)
                 parameters.Add(new NpgsqlParameter("@Id", excludeId.Value));
 

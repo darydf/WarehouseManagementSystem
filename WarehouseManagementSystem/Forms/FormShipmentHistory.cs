@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Npgsql;
+using Org.BouncyCastle.Utilities;
+using System;
 using System.Data;
-using Npgsql;
 using System.Windows.Forms;
 using WarehouseManagementSystem.Helpers;
 using WarehouseManagementSystem.Models;
@@ -26,32 +27,10 @@ namespace WarehouseManagementSystem.Forms
             btnViewDetails.Click += btnViewDetails_Click;
         }
 
-        /*private void LoadShipments()
-        {
-            try
-            {
-                DataTable data;
-                if (_isStorekeeper)
-                {
-                    var sql = Constants.Queries.GetAllShipments + " WHERE StorekeeperName = @Storekeeper";
-                    var parameters = new[] { new NpgsqlParameter("@Storekeeper", Session.CurrentUser.FullName) };
-                    data = DatabaseHelper.ExecuteQuery(sql, parameters);
-                }
-                else
-                {
-                    data = DatabaseHelper.ExecuteQuery(Constants.Queries.GetAllShipments);
-                }
-
-                dgvShipments.DataSource = data;
-                ConfigureGrid();
-            }
-            catch (Exception ex)
-            {
-                AppLogger.Error(ex, "Ошибка загрузки истории отгрузок");
-                MessageBox.Show(Constants.Messages.ConnectionError, Text,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }*/
+        /// <summary>
+        /// Загружает список отгрузок из базы данных.
+        /// Для кладовщика - только свои отгрузки, для администратора - все.
+        /// </summary>
         private void LoadShipments()
         {
             try
@@ -72,6 +51,7 @@ namespace WarehouseManagementSystem.Forms
                 JOIN Users u ON s.StorekeeperId = u.Id
                 LEFT JOIN ShipmentDetails sd ON s.Id = sd.ShipmentId
                 WHERE s.StorekeeperId = @StorekeeperId
+                AND s.ShipmentNumber LIKE 'SHP-%'
                 GROUP BY s.Id, s.ShipmentNumber, s.ShipmentDate, u.FullName
                 ORDER BY s.ShipmentDate DESC";
 
@@ -91,6 +71,7 @@ namespace WarehouseManagementSystem.Forms
                 FROM Shipments s
                 JOIN Users u ON s.StorekeeperId = u.Id
                 LEFT JOIN ShipmentDetails sd ON s.Id = sd.ShipmentId
+                WHERE s.ShipmentNumber LIKE 'SHP-%'
                 GROUP BY s.Id, s.ShipmentNumber, s.ShipmentDate, u.FullName
                 ORDER BY s.ShipmentDate DESC";
 
@@ -117,8 +98,8 @@ namespace WarehouseManagementSystem.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки: {ex.Message}", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format(String.LoadError, ex.Message), String.ErrorTitle,
+    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -140,6 +121,10 @@ namespace WarehouseManagementSystem.Forms
             dgvShipments.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
+        /// <summary>
+        /// Обработчик нажатия кнопки "Просмотреть детали".
+        /// Открывает форму с детальной информацией об отгрузке.
+        /// </summary>
         private void btnViewDetails_Click(object sender, EventArgs e)
         {
             if (dgvShipments.CurrentRow == null)
@@ -154,5 +139,6 @@ namespace WarehouseManagementSystem.Forms
             var detailsForm = new FormShipmentDetails(shipmentId, shipmentNumber);
             detailsForm.ShowDialog();
         }
+
     }
 }

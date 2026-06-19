@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Npgsql;
+using Org.BouncyCastle.Utilities;
+using System;
 using System.Data;
-using Npgsql;
 using System.Windows.Forms;
 using WarehouseManagementSystem.Helpers;
 
@@ -18,6 +19,7 @@ namespace WarehouseManagementSystem.Forms
             this.btnSave.Click += btnSave_Click;
             this.btnCancel.Click += btnCancel_Click;
             LoadCategories();
+            SetupExpiryDate();
         }
 
         public FormProductEdit(int id)
@@ -29,7 +31,17 @@ namespace WarehouseManagementSystem.Forms
             this.btnSave.Click += btnSave_Click;
             this.btnCancel.Click += btnCancel_Click;
             LoadCategories();
+            SetupExpiryDate();
             LoadProductData();
+        }
+        private void SetupExpiryDate()
+        {
+            dtpExpiryDate.Format = DateTimePickerFormat.Short;
+            dtpExpiryDate.Value = DateTime.Now.AddDays(14);
+            dtpExpiryDate.Enabled = false;
+
+            chkNoExpiry.Checked = true;
+            chkNoExpiry.CheckedChanged += chkNoExpiry_CheckedChanged;
         }
 
         private void LoadCategories()
@@ -77,15 +89,23 @@ namespace WarehouseManagementSystem.Forms
                     txtUnit.Text = row["UnitOfMeasure"].ToString();
                     txtPrice.Text = row["PurchasePrice"].ToString();
 
-                    if (row["ShelfLife"] != DBNull.Value)
+                    if (row["ExpiryDate"] != DBNull.Value)
                     {
-                        txtShelfLife.Text = row["ShelfLife"].ToString();
+                        DateTime expiryDate = Convert.ToDateTime(row["ExpiryDate"]);
+                        dtpExpiryDate.Value = expiryDate;
+                        chkNoExpiry.Checked = false;
+                        dtpExpiryDate.Enabled = true;
+                    }
+                    else
+                    {
+                        chkNoExpiry.Checked = true;
+                        dtpExpiryDate.Enabled = false;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка загрузки: " + ex.Message);
+                MessageBox.Show(string.Format(String.LoadError, ex.Message));
             }
         }
 
@@ -94,21 +114,21 @@ namespace WarehouseManagementSystem.Forms
          
             if (string.IsNullOrEmpty(txtArticle.Text))
             {
-                MessageBox.Show("Введите артикул товара!");
+                MessageBox.Show(String.EnterArticle);
                 txtArticle.Focus();
                 return;
             }
 
             if (string.IsNullOrEmpty(txtName.Text))
             {
-                MessageBox.Show("Введите название товара!");
+                MessageBox.Show(String.EnterName);
                 txtName.Focus();
                 return;
             }
 
             if (string.IsNullOrEmpty(txtUnit.Text))
             {
-                MessageBox.Show("Введите единицу измерения!");
+                MessageBox.Show(String.EnterUnit);
                 txtUnit.Focus();
                 return;
             }
@@ -116,26 +136,22 @@ namespace WarehouseManagementSystem.Forms
             decimal price;
             if (!decimal.TryParse(txtPrice.Text, out price))
             {
-                MessageBox.Show("Введите корректную цену!");
+                MessageBox.Show(String.EnterValidPrice);
                 txtPrice.Focus();
                 return;
             }
 
             if (price <= 0)
             {
-                MessageBox.Show("Цена должна быть больше нуля!");
+                MessageBox.Show(String.PriceMustBePositive);
                 txtPrice.Focus();
                 return;
             }
 
-            int? shelfLife = null;
-            if (!string.IsNullOrEmpty(txtShelfLife.Text))
+            DateTime? expiryDate = null;
+            if (!chkNoExpiry.Checked)
             {
-                int sl;
-                if (int.TryParse(txtShelfLife.Text, out sl) && sl > 0)
-                {
-                    shelfLife = sl;
-                }
+                expiryDate = dtpExpiryDate.Value;
             }
 
             int? categoryId = null;
@@ -148,11 +164,11 @@ namespace WarehouseManagementSystem.Forms
             {
                 if (_isEdit)
                 {
-                     
+
                     string sql = @"UPDATE Products 
-                                  SET Article = @Article, Name = @Name, CategoryId = @CategoryId,
-                                      UnitOfMeasure = @Unit, PurchasePrice = @Price, ShelfLife = @ShelfLife
-                                  WHERE Id = @Id";
+              SET Article = @Article, Name = @Name, CategoryId = @CategoryId,
+                  UnitOfMeasure = @Unit, PurchasePrice = @Price, ExpiryDate = @ExpiryDate
+              WHERE Id = @Id";
 
                     var parameters = new[]
                     {
@@ -161,18 +177,18 @@ namespace WarehouseManagementSystem.Forms
                         new NpgsqlParameter("@CategoryId", categoryId.HasValue ? (object)categoryId.Value : DBNull.Value),
                         new NpgsqlParameter("@Unit", txtUnit.Text),
                         new NpgsqlParameter("@Price", price),
-                        new NpgsqlParameter("@ShelfLife", shelfLife.HasValue ? (object)shelfLife.Value : DBNull.Value),
+                        new NpgsqlParameter("@ExpiryDate", expiryDate.HasValue ? (object)expiryDate.Value : DBNull.Value),
                         new NpgsqlParameter("@Id", _productId)
                     };
 
                     DatabaseHelper.ExecuteNonQuery(sql, parameters);
-                    MessageBox.Show("Товар успешно обновлен!");
+                    MessageBox.Show(String.ProductUpdatedSuccess);
                 }
                 else
                 {
-                   
-                    string insertSql = @"INSERT INTO Products (Article, Name, CategoryId, UnitOfMeasure, PurchasePrice, ShelfLife) 
-                                        VALUES (@Article, @Name, @CategoryId, @Unit, @Price, @ShelfLife) RETURNING Id";
+
+                    string insertSql = @"INSERT INTO Products (Article, Name, CategoryId, UnitOfMeasure, PurchasePrice, ExpiryDate) 
+                    VALUES (@Article, @Name, @CategoryId, @Unit, @Price, @ExpiryDate) RETURNING Id";
 
                     var insertParams = new[]
                     {
@@ -181,7 +197,7 @@ namespace WarehouseManagementSystem.Forms
                         new NpgsqlParameter("@CategoryId", categoryId.HasValue ? (object)categoryId.Value : DBNull.Value),
                         new NpgsqlParameter("@Unit", txtUnit.Text),
                         new NpgsqlParameter("@Price", price),
-                        new NpgsqlParameter("@ShelfLife", shelfLife.HasValue ? (object)shelfLife.Value : DBNull.Value)
+                       new NpgsqlParameter("@ExpiryDate", expiryDate.HasValue ? (object)expiryDate.Value : DBNull.Value)
                     };
 
                     int newId = Convert.ToInt32(DatabaseHelper.ExecuteScalar(insertSql, insertParams));
@@ -191,7 +207,7 @@ namespace WarehouseManagementSystem.Forms
                     var stockParams = new[] { new NpgsqlParameter("@ProductId", newId) };
                     DatabaseHelper.ExecuteNonQuery(stockSql, stockParams);
 
-                    MessageBox.Show("Товар успешно добавлен!");
+                    MessageBox.Show(String.ProductUpdatedSuccess);
                 }
 
                 this.DialogResult = DialogResult.OK;
@@ -199,7 +215,7 @@ namespace WarehouseManagementSystem.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при сохранении: " + ex.Message);
+                MessageBox.Show(string.Format(String.SaveErrorWithDetails, ex.Message));
             }
         }
 
@@ -207,6 +223,16 @@ namespace WarehouseManagementSystem.Forms
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void txtShelfLife_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void chkNoExpiry_CheckedChanged(object sender, EventArgs e)
+        {
+            dtpExpiryDate.Enabled = !chkNoExpiry.Checked;
         }
     }
 }

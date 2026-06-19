@@ -34,9 +34,12 @@
             this.документыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отгрузкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.новаяОтгрузкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.новаяПоставкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сменитьПользователяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExit = new System.Windows.Forms.Button();
             this.panelContent = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
+            this.проверкаКонтрагентаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.panelContent.SuspendLayout();
             this.SuspendLayout();
@@ -47,10 +50,12 @@
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.складToolStripMenuItem,
-            this.документыToolStripMenuItem});
+            this.документыToolStripMenuItem,
+            this.сменитьПользователяToolStripMenuItem,
+            this.проверкаКонтрагентаToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1082, 28);
+            this.menuStrip.Size = new System.Drawing.Size(1098, 33);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip1";
             // 
@@ -58,44 +63,64 @@
             // 
             this.складToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.остаткиToolStripMenuItem});
+            this.складToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.складToolStripMenuItem.Name = "складToolStripMenuItem";
-            this.складToolStripMenuItem.Size = new System.Drawing.Size(63, 24);
+            this.складToolStripMenuItem.Size = new System.Drawing.Size(74, 29);
             this.складToolStripMenuItem.Text = "Склад";
             // 
             // остаткиToolStripMenuItem
             // 
             this.остаткиToolStripMenuItem.Name = "остаткиToolStripMenuItem";
-            this.остаткиToolStripMenuItem.Size = new System.Drawing.Size(146, 26);
+            this.остаткиToolStripMenuItem.Size = new System.Drawing.Size(162, 30);
             this.остаткиToolStripMenuItem.Text = "Остатки";
             // 
             // документыToolStripMenuItem
             // 
             this.документыToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.отгрузкиToolStripMenuItem,
-            this.новаяОтгрузкаToolStripMenuItem});
+            this.новаяОтгрузкаToolStripMenuItem,
+            this.новаяПоставкаToolStripMenuItem});
+            this.документыToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.документыToolStripMenuItem.Name = "документыToolStripMenuItem";
-            this.документыToolStripMenuItem.Size = new System.Drawing.Size(101, 24);
+            this.документыToolStripMenuItem.Size = new System.Drawing.Size(119, 29);
             this.документыToolStripMenuItem.Text = "Документы";
             // 
             // отгрузкиToolStripMenuItem
             // 
             this.отгрузкиToolStripMenuItem.Name = "отгрузкиToolStripMenuItem";
-            this.отгрузкиToolStripMenuItem.Size = new System.Drawing.Size(199, 26);
+            this.отгрузкиToolStripMenuItem.Size = new System.Drawing.Size(228, 30);
             this.отгрузкиToolStripMenuItem.Text = "Отгрузки";
             // 
             // новаяОтгрузкаToolStripMenuItem
             // 
             this.новаяОтгрузкаToolStripMenuItem.Name = "новаяОтгрузкаToolStripMenuItem";
-            this.новаяОтгрузкаToolStripMenuItem.Size = new System.Drawing.Size(199, 26);
+            this.новаяОтгрузкаToolStripMenuItem.Size = new System.Drawing.Size(228, 30);
             this.новаяОтгрузкаToolStripMenuItem.Text = "Новая отгрузка";
+            // 
+            // новаяПоставкаToolStripMenuItem
+            // 
+            this.новаяПоставкаToolStripMenuItem.Name = "новаяПоставкаToolStripMenuItem";
+            this.новаяПоставкаToolStripMenuItem.Size = new System.Drawing.Size(228, 30);
+            this.новаяПоставкаToolStripMenuItem.Text = "Новая поставка";
+            this.новаяПоставкаToolStripMenuItem.Click += new System.EventHandler(this.новаяПоставкаToolStripMenuItem_Click);
+            // 
+            // сменитьПользователяToolStripMenuItem
+            // 
+            this.сменитьПользователяToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.сменитьПользователяToolStripMenuItem.Name = "сменитьПользователяToolStripMenuItem";
+            this.сменитьПользователяToolStripMenuItem.Size = new System.Drawing.Size(211, 29);
+            this.сменитьПользователяToolStripMenuItem.Text = "Сменить пользователя";
+            this.сменитьПользователяToolStripMenuItem.Click += new System.EventHandler(this.сменитьПользователяToolStripMenuItem_Click);
             // 
             // btnExit
             // 
+            this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExit.BackColor = System.Drawing.Color.MediumAquamarine;
             this.btnExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExit.Location = new System.Drawing.Point(977, 0);
+            this.btnExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.btnExit.Location = new System.Drawing.Point(985, 0);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(75, 28);
+            this.btnExit.Size = new System.Drawing.Size(101, 33);
             this.btnExit.TabIndex = 1;
             this.btnExit.Text = "ВЫХОД";
             this.btnExit.UseVisualStyleBackColor = false;
@@ -104,9 +129,10 @@
             // 
             this.panelContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.panelContent.Controls.Add(this.label1);
-            this.panelContent.Location = new System.Drawing.Point(12, 68);
+            this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelContent.Location = new System.Drawing.Point(0, 33);
             this.panelContent.Name = "panelContent";
-            this.panelContent.Size = new System.Drawing.Size(1058, 519);
+            this.panelContent.Size = new System.Drawing.Size(1098, 615);
             this.panelContent.TabIndex = 2;
             // 
             // label1
@@ -114,20 +140,29 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(420, 263);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(161, 16);
+            this.label1.Size = new System.Drawing.Size(7, 16);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Область дочерних окон";
+            this.label1.Text = "\r\n";
+            // 
+            // проверкаКонтрагентаToolStripMenuItem
+            // 
+          /*  this.проверкаКонтрагентаToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.проверкаКонтрагентаToolStripMenuItem.Name = "проверкаКонтрагентаToolStripMenuItem";
+            this.проверкаКонтрагентаToolStripMenuItem.Size = new System.Drawing.Size(213, 29);
+            this.проверкаКонтрагентаToolStripMenuItem.Text = "Проверка контрагента";
+            this.проверкаКонтрагентаToolStripMenuItem.Click += new System.EventHandler(this.проверкаКонтрагентаToolStripMenuItem_Click); */
             // 
             // FormStorekeeperMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1082, 648);
+            this.ClientSize = new System.Drawing.Size(1098, 648);
             this.Controls.Add(this.panelContent);
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "FormStorekeeperMain";
+            this.Load += new System.EventHandler(this.FormStorekeeperMain_Load);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.panelContent.ResumeLayout(false);
@@ -148,5 +183,8 @@
         private System.Windows.Forms.ToolStripMenuItem отгрузкиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem новаяОтгрузкаToolStripMenuItem;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolStripMenuItem новаяПоставкаToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem сменитьПользователяToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem проверкаКонтрагентаToolStripMenuItem;
     }
 }

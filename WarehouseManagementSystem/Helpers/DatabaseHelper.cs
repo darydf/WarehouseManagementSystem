@@ -10,7 +10,7 @@ namespace WarehouseManagementSystem.Helpers
     /// </summary>
     public static class DatabaseHelper
     {
-        private static readonly string _connectionString = "Host=localhost;Port=5432;Database=WarehouseDB;Username=postgres;Password=postgres;";
+        private static readonly string _connectionString = "Host=localhost;Port=5432;Database=WarehouseBD;Username=postgres;Password=railrail2007;";
 
         /// <summary>
         /// Получить соединение с базой данных
@@ -42,13 +42,14 @@ namespace WarehouseManagementSystem.Helpers
             }
         }
 
+
         /// <summary>
         /// Выполнить SQL запрос и вернуть результат в виде DataTable
         /// </summary>
         /// <param name="query">SQL запрос</param>
         /// <param name="parameters">Параметры запроса</param>
         /// <returns>DataTable с результатами запроса</returns>
-        public static DataTable ExecuteQuery(string query, NpgsqlParameter[] parameters = null)
+        /*public static DataTable ExecuteQuery(string query, NpgsqlParameter[] parameters = null)
         {
             using (var conn = GetConnection())
             {
@@ -65,6 +66,35 @@ namespace WarehouseManagementSystem.Helpers
                     }
                 }
             }
+        }*/
+        public static DataTable ExecuteQuery(string query, NpgsqlParameter[] parameters = null)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        if (parameters != null)
+                            cmd.Parameters.AddRange(parameters);
+
+                        using (var adapter = new NpgsqlDataAdapter(cmd))
+                        {
+                            var data = new DataTable();
+                            adapter.Fill(data);
+                            return data;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Показываем и запрос, и ошибку
+                MessageBox.Show($"SQL ОШИБКА:\n{ex.Message}\n\nЗАПРОС:\n{query}",
+                                "Ошибка базы данных",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
+            }
         }
 
         /// <summary>
@@ -73,7 +103,7 @@ namespace WarehouseManagementSystem.Helpers
         /// <param name="query">SQL запрос</param>
         /// <param name="parameters">Параметры запроса</param>
         /// <returns>Первое значение результата запроса</returns>
-        public static object ExecuteScalar(string query, NpgsqlParameter[] parameters = null)
+        /*public static object ExecuteScalar(string query, NpgsqlParameter[] parameters = null)
         {
             using (var conn = GetConnection())
             {
@@ -85,6 +115,30 @@ namespace WarehouseManagementSystem.Helpers
                     conn.Open();
                     return cmd.ExecuteScalar();
                 }
+            }
+        } */
+        public static object ExecuteScalar(string query, NpgsqlParameter[] parameters = null)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        if (parameters != null)
+                            cmd.Parameters.AddRange(parameters);
+
+                        conn.Open();
+                        return cmd.ExecuteScalar();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"SQL ОШИБКА (Scalar):\n{ex.Message}\n\nЗАПРОС:\n{query}",
+                                "Ошибка базы данных",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
             }
         }
 
@@ -125,8 +179,8 @@ namespace WarehouseManagementSystem.Helpers
             catch (Exception ex)
             {
                 AppLogger.Error(ex, "Ошибка подключения к базе данных");
-                MessageBox.Show(Constants.Messages.ConnectionError, "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Ошибка базы данных: {ex.Message}", "Ошибка",
+MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }

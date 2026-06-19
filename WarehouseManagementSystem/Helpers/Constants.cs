@@ -26,11 +26,11 @@
             public const string ProductHasShipments = "Нельзя удалить товар, так как есть отгрузки с этим товаром";
         }
 
-        public static class Roles
+        /*public static class Roles
         {
             public const string Admin = "Admin";
             public const string Storekeeper = "Storekeeper";
-        }
+        }*/
 
         public static class ShipmentStatus
         {
@@ -63,7 +63,7 @@
             public const string Name = "Название";
             public const string Category = "Категория";
             public const string Unit = "Ед. изм.";
-            public const string Price = "Цена закупки";
+            public const string Price = "Цена продажи";
             public const string Stock = "Остаток";
             public const string Quantity = "Количество";
             public const string ShipmentNumber = "Номер отгрузки";

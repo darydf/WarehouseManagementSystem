@@ -37,8 +37,6 @@
             this.dgvStock = new System.Windows.Forms.DataGridView();
             this.btnRemoveItem = new System.Windows.Forms.Button();
             this.btnConfirm = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStock)).BeginInit();
@@ -51,13 +49,13 @@
             this.panel1.Controls.Add(this.lblDocNumber);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1040, 37);
+            this.panel1.Size = new System.Drawing.Size(1063, 37);
             this.panel1.TabIndex = 0;
             // 
             // lblDate
             // 
             this.lblDate.AutoSize = true;
-            this.lblDate.Location = new System.Drawing.Point(217, 9);
+            this.lblDate.Location = new System.Drawing.Point(360, 9);
             this.lblDate.Name = "lblDate";
             this.lblDate.Size = new System.Drawing.Size(42, 16);
             this.lblDate.TabIndex = 2;
@@ -98,18 +96,18 @@
             // 
             this.dgvCart.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dgvCart.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvCart.Location = new System.Drawing.Point(48, 87);
+            this.dgvCart.Location = new System.Drawing.Point(12, 87);
             this.dgvCart.Name = "dgvCart";
             this.dgvCart.RowHeadersWidth = 51;
             this.dgvCart.RowTemplate.Height = 24;
-            this.dgvCart.Size = new System.Drawing.Size(449, 330);
+            this.dgvCart.Size = new System.Drawing.Size(526, 330);
             this.dgvCart.TabIndex = 5;
             // 
             // dgvStock
             // 
             this.dgvStock.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.dgvStock.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvStock.Location = new System.Drawing.Point(523, 87);
+            this.dgvStock.Location = new System.Drawing.Point(563, 87);
             this.dgvStock.Name = "dgvStock";
             this.dgvStock.RowHeadersWidth = 51;
             this.dgvStock.RowTemplate.Height = 24;
@@ -139,31 +137,11 @@
             this.btnConfirm.Text = "Провести отгрузку";
             this.btnConfirm.UseVisualStyleBackColor = false;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(520, 68);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(129, 16);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "Остатки на складе";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(45, 68);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(117, 16);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Состав отгрузки";
-            // 
             // FormNewShipment
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1041, 605);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(1182, 605);
             this.Controls.Add(this.btnConfirm);
             this.Controls.Add(this.btnRemoveItem);
             this.Controls.Add(this.dgvStock);
@@ -177,7 +155,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvCart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStock)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -192,7 +169,5 @@
         private System.Windows.Forms.DataGridView dgvStock;
         private System.Windows.Forms.Button btnRemoveItem;
         private System.Windows.Forms.Button btnConfirm;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
     }
 }

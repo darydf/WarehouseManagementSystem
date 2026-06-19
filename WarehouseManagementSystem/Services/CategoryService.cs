@@ -5,7 +5,7 @@ using WarehouseManagementSystem.Helpers;
 
 namespace WarehouseManagementSystem.Services
 {
-    public class CategoryService
+    public class CategoryService : ICategoryService
     {
         public DataTable GetAllCategories()
         {

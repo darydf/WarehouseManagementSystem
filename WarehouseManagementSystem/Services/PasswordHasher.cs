@@ -4,9 +4,9 @@ using System.Text;
 
 namespace WarehouseManagementSystem.Services
 {
-    public static class PasswordHasher
+    public class PasswordHasher : IPasswordHasher
     {
-        public static string HashPassword(string password)
+        public string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())
             {
@@ -21,7 +21,7 @@ namespace WarehouseManagementSystem.Services
             }
         }
 
-        public static bool VerifyPassword(string password, string hash)
+        public bool VerifyPassword(string password, string hash)
         {
             var computedHash = HashPassword(password);
             return computedHash == hash;

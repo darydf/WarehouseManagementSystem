@@ -73,5 +73,37 @@ namespace WarehouseManagementSystem.Forms
             AppLogger.Info("Завершение работы приложения");
             Application.Exit();
         }
+
+        private void отчетПоОтгрузкамToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormShipmentReport reportForm = new FormShipmentReport();
+            reportForm.ShowDialog();
+        }
+
+        private void сменитьРольToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormLogin loginForm = new FormLogin();
+            loginForm.Show();
+
+            this.Close();
+        }
+
+        private void списаниеПросрочкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormWriteOffExpired form = new FormWriteOffExpired();
+            form.ShowDialog();
+        }
+
+        private void настройкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormSettings settingsForm = new FormSettings();
+            settingsForm.ShowDialog();
+        }
+
+        private void картаСкладаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HeatmapForm form = new HeatmapForm();
+            form.ShowDialog();
+        }
     }
 }
